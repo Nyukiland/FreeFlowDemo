@@ -142,9 +142,27 @@
             "id": "7f3fbdf8-f793-44be-90e7-f5605651f7f6",
             "actions": [
                 {
-                    "name": "New action",
+                    "name": "Attack",
                     "type": "Button",
                     "id": "900493ca-7aa7-4c47-964f-6fac9ef40118",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Dash",
+                    "type": "Button",
+                    "id": "76aae71b-2967-4b5d-bf70-dd41bfc9f443",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Counter",
+                    "type": "Button",
+                    "id": "14de529e-94cb-47cf-ac34-c5134db3633c",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -155,11 +173,33 @@
                 {
                     "name": "",
                     "id": "d998e2c8-34e8-4aae-b16d-529e703de005",
-                    "path": "",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "New action",
+                    "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b593c0a0-c3fb-4c90-908d-0fb5a38cb01b",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d21d523c-12d4-4d2e-ac89-cd0c75c3da20",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Counter",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

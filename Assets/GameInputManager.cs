@@ -164,9 +164,27 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
             ""id"": ""7f3fbdf8-f793-44be-90e7-f5605651f7f6"",
             ""actions"": [
                 {
-                    ""name"": ""New action"",
+                    ""name"": ""Attack"",
                     ""type"": ""Button"",
                     ""id"": ""900493ca-7aa7-4c47-964f-6fac9ef40118"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Dash"",
+                    ""type"": ""Button"",
+                    ""id"": ""76aae71b-2967-4b5d-bf70-dd41bfc9f443"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Counter"",
+                    ""type"": ""Button"",
+                    ""id"": ""14de529e-94cb-47cf-ac34-c5134db3633c"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -177,11 +195,33 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""d998e2c8-34e8-4aae-b16d-529e703de005"",
-                    ""path"": """",
+                    ""path"": ""<Gamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""New action"",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b593c0a0-c3fb-4c90-908d-0fb5a38cb01b"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d21d523c-12d4-4d2e-ac89-cd0c75c3da20"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Counter"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -230,7 +270,9 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
         m_Camera_Ymove = m_Camera.FindAction("Ymove", throwIfNotFound: true);
         // Fight
         m_Fight = asset.FindActionMap("Fight", throwIfNotFound: true);
-        m_Fight_Newaction = m_Fight.FindAction("New action", throwIfNotFound: true);
+        m_Fight_Attack = m_Fight.FindAction("Attack", throwIfNotFound: true);
+        m_Fight_Dash = m_Fight.FindAction("Dash", throwIfNotFound: true);
+        m_Fight_Counter = m_Fight.FindAction("Counter", throwIfNotFound: true);
         // Running
         m_Running = asset.FindActionMap("Running", throwIfNotFound: true);
         m_Running_Newaction = m_Running.FindAction("New action", throwIfNotFound: true);
@@ -419,12 +461,16 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
     // Fight
     private readonly InputActionMap m_Fight;
     private List<IFightActions> m_FightActionsCallbackInterfaces = new List<IFightActions>();
-    private readonly InputAction m_Fight_Newaction;
+    private readonly InputAction m_Fight_Attack;
+    private readonly InputAction m_Fight_Dash;
+    private readonly InputAction m_Fight_Counter;
     public struct FightActions
     {
         private @GameInputManager m_Wrapper;
         public FightActions(@GameInputManager wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Newaction => m_Wrapper.m_Fight_Newaction;
+        public InputAction @Attack => m_Wrapper.m_Fight_Attack;
+        public InputAction @Dash => m_Wrapper.m_Fight_Dash;
+        public InputAction @Counter => m_Wrapper.m_Fight_Counter;
         public InputActionMap Get() { return m_Wrapper.m_Fight; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -434,16 +480,28 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_FightActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_FightActionsCallbackInterfaces.Add(instance);
-            @Newaction.started += instance.OnNewaction;
-            @Newaction.performed += instance.OnNewaction;
-            @Newaction.canceled += instance.OnNewaction;
+            @Attack.started += instance.OnAttack;
+            @Attack.performed += instance.OnAttack;
+            @Attack.canceled += instance.OnAttack;
+            @Dash.started += instance.OnDash;
+            @Dash.performed += instance.OnDash;
+            @Dash.canceled += instance.OnDash;
+            @Counter.started += instance.OnCounter;
+            @Counter.performed += instance.OnCounter;
+            @Counter.canceled += instance.OnCounter;
         }
 
         private void UnregisterCallbacks(IFightActions instance)
         {
-            @Newaction.started -= instance.OnNewaction;
-            @Newaction.performed -= instance.OnNewaction;
-            @Newaction.canceled -= instance.OnNewaction;
+            @Attack.started -= instance.OnAttack;
+            @Attack.performed -= instance.OnAttack;
+            @Attack.canceled -= instance.OnAttack;
+            @Dash.started -= instance.OnDash;
+            @Dash.performed -= instance.OnDash;
+            @Dash.canceled -= instance.OnDash;
+            @Counter.started -= instance.OnCounter;
+            @Counter.performed -= instance.OnCounter;
+            @Counter.canceled -= instance.OnCounter;
         }
 
         public void RemoveCallbacks(IFightActions instance)
@@ -521,7 +579,9 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
     }
     public interface IFightActions
     {
-        void OnNewaction(InputAction.CallbackContext context);
+        void OnAttack(InputAction.CallbackContext context);
+        void OnDash(InputAction.CallbackContext context);
+        void OnCounter(InputAction.CallbackContext context);
     }
     public interface IRunningActions
     {
