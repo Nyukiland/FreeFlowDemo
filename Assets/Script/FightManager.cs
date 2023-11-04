@@ -12,7 +12,15 @@ public class FightManager : MonoBehaviour
 
     [Tooltip("how long the player should hold for a hard attack")]
     [SerializeField]
-    float hardAttackTime = 0.2f;
+    float hardAttackTime = 0.1f;
+
+    [Tooltip("the force given to the player for the dash")]
+    [SerializeField]
+    float dashStrength = 10;
+
+    [Tooltip("the force given to the player for the dash")]
+    [SerializeField]
+    float moveAttackSpeed = 5;
 
     [Header("public variable do not touch")]
 
@@ -22,13 +30,15 @@ public class FightManager : MonoBehaviour
     //private variable
     GameInputManager inputPlayer;
 
+    PlayerMovement playerMovement;
+
     GameObject currentEnemy;
 
-    float directionX, directionZ;
+    bool startAttackC, stopAttackC;
+    bool startAttackD, stopAttackD;
+    bool counter;
 
-    bool startAttack, attack, chargedAttack, counter;
-
-    float timerC = Mathf.Infinity, timerA = Mathf.Infinity;
+    float timerC = Mathf.Infinity, timerAC = Mathf.Infinity, timerAD = Mathf.Infinity;
 
     #region InputSetUP
     private void Awake()
@@ -39,14 +49,11 @@ public class FightManager : MonoBehaviour
 
     void InitializeInput()
     {
-        inputPlayer.Movement.ForwardBack.performed += ctx => directionZ = ctx.ReadValue<float>();
-        inputPlayer.Movement.ForwardBack.canceled += ctx => directionZ = 0;
+        inputPlayer.Fight.Attack.performed += ctx => startAttackC = true;
+        inputPlayer.Fight.Attack.canceled += ctx => stopAttackC = true;
 
-        inputPlayer.Movement.LeftRight.performed += ctx => directionX = ctx.ReadValue<float>();
-        inputPlayer.Movement.LeftRight.canceled += ctx => directionX = 0;
-
-        inputPlayer.Fight.Attack.performed += ctx => startAttack = true;
-        inputPlayer.Fight.Attack.canceled += ctx => startAttack = false;
+        inputPlayer.Fight.DistAttack.performed += ctx => startAttackD = true;
+        inputPlayer.Fight.DistAttack.canceled += ctx => stopAttackD = true;
 
         inputPlayer.Fight.Counter.performed += ctx => timerC = 0;
         inputPlayer.Fight.Dash.performed += ctx => Dash();
@@ -57,6 +64,8 @@ public class FightManager : MonoBehaviour
     void Start()
     {
         InitializeInput();
+
+        playerMovement = GetComponent<PlayerMovement>();
     }
 
     // Update is called once per frame
@@ -64,6 +73,68 @@ public class FightManager : MonoBehaviour
     {
         CounterStateControl();
         CounterAct();
+        TimerAttackC();
+        TimerAttackD();
+    }
+
+    void TimerAttackC()
+    {
+        if (!startAttackC || startAttackD || counter) return;
+
+        if (stopAttackC)
+        {
+            startAttackC = false;
+            if (timerAC > hardAttackTime) HardAttackClose();
+            else AttackClose();
+
+            timerAC = 0;
+        }
+
+        if (startAttackC)
+        {
+            stopAttackC = false;
+            timerAC += Time.deltaTime;
+        }
+    }
+
+    void AttackClose()
+    {
+
+    }
+
+    void HardAttackClose()
+    {
+
+    }
+
+    void TimerAttackD()
+    {
+        if (!startAttackD || startAttackC || counter) return;
+
+        if (stopAttackD)
+        {
+            startAttackD = false;
+            if (timerAD > hardAttackTime) HardAttackDist();
+            else AttackDist();
+
+            timerAD = 0;
+        }
+
+        if (startAttackD)
+        {
+            stopAttackD = false;
+            timerAD += Time.deltaTime;
+        }
+    }
+
+    void AttackDist()
+    {
+
+    }
+
+    void HardAttackDist()
+    {
+
     }
 
     void CounterStateControl()
@@ -86,24 +157,23 @@ public class FightManager : MonoBehaviour
 
     void Dash()
     {
-        if (GetDirection() != Vector3.zero)
+        if (playerMovement.movementVector != Vector3.zero)
         {
             //dash in the direction of the stick
+            GetComponent<Rigidbody>().AddForce(playerMovement.movementVector * dashStrength, ForceMode.Impulse);
         }
         else if (currentEnemy != null)
         {
             //dash in the opposite direction of the enemy
+            Vector3 dir = transform.position - currentEnemy.transform.position;
+            dir = - dir.normalized;
+
+            GetComponent<Rigidbody>().AddForce(dir * dashStrength, ForceMode.Impulse);
         }
         else
         {
             //dash forward
+            GetComponent<Rigidbody>().AddForce(playerMovement.pivotCam.transform.forward * dashStrength, ForceMode.Impulse);
         }
-    }
-
-    Vector3 GetDirection()
-    {
-        if (directionX != 0 && directionZ != 0) return (transform.forward * directionZ) + (transform.right * directionX);
-
-        return Vector3.zero;
     }
 }

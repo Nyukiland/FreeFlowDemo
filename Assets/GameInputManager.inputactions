@@ -167,6 +167,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "DistAttack",
+                    "type": "Button",
+                    "id": "d1443b69-51ac-4436-be3b-ff79698ec652",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -184,7 +193,7 @@
                 {
                     "name": "",
                     "id": "b593c0a0-c3fb-4c90-908d-0fb5a38cb01b",
-                    "path": "<Gamepad>/buttonEast",
+                    "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -195,11 +204,22 @@
                 {
                     "name": "",
                     "id": "d21d523c-12d4-4d2e-ac89-cd0c75c3da20",
-                    "path": "<Gamepad>/buttonNorth",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Counter",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "64043491-e2e7-4224-a1de-0d8f8de910e7",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DistAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

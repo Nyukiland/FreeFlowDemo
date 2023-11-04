@@ -20,12 +20,13 @@ public class PlayerMovement : MonoBehaviour
     float sprintMultiplier;
 
     [Tooltip("camera for players direction, if the camera is not fix")]
-    [SerializeField]
-    GameObject pivotCam;
+    public GameObject pivotCam;
 
     //public variable
-    //[Space(2)]
-    //[Header("public varible (no need to touch)")]  
+    [Space(2)]
+    [Header("public varible (no need to touch)")]
+
+    public Vector3 movementVector;
 
     //private variable
     Rigidbody character;
@@ -78,11 +79,11 @@ public class PlayerMovement : MonoBehaviour
     {
         float vetVelo = character.velocity.y;
 
-        Vector3 movement = (pivotCam.transform.forward * moveX) + (pivotCam.transform.right * moveZ);
+        movementVector = (pivotCam.transform.forward * moveX) + (pivotCam.transform.right * moveZ);
 
-        movement = Vector3.ClampMagnitude(movement, 1) * speed * isSprint;
+        movementVector = Vector3.ClampMagnitude(movementVector, 1) * speed * isSprint;
 
-        character.velocity = movement + (transform.up * vetVelo);
+        character.velocity = movementVector + (transform.up * vetVelo);
     }
 
     //verify if the player is grounded based on a raycast that check the distance between the lowest point of the player and the grounds

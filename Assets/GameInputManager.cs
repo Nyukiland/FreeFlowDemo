@@ -189,6 +189,15 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DistAttack"",
+                    ""type"": ""Button"",
+                    ""id"": ""d1443b69-51ac-4436-be3b-ff79698ec652"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -206,7 +215,7 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""b593c0a0-c3fb-4c90-908d-0fb5a38cb01b"",
-                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -217,11 +226,22 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""d21d523c-12d4-4d2e-ac89-cd0c75c3da20"",
-                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Counter"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""64043491-e2e7-4224-a1de-0d8f8de910e7"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DistAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -273,6 +293,7 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
         m_Fight_Attack = m_Fight.FindAction("Attack", throwIfNotFound: true);
         m_Fight_Dash = m_Fight.FindAction("Dash", throwIfNotFound: true);
         m_Fight_Counter = m_Fight.FindAction("Counter", throwIfNotFound: true);
+        m_Fight_DistAttack = m_Fight.FindAction("DistAttack", throwIfNotFound: true);
         // Running
         m_Running = asset.FindActionMap("Running", throwIfNotFound: true);
         m_Running_Newaction = m_Running.FindAction("New action", throwIfNotFound: true);
@@ -464,6 +485,7 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
     private readonly InputAction m_Fight_Attack;
     private readonly InputAction m_Fight_Dash;
     private readonly InputAction m_Fight_Counter;
+    private readonly InputAction m_Fight_DistAttack;
     public struct FightActions
     {
         private @GameInputManager m_Wrapper;
@@ -471,6 +493,7 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
         public InputAction @Attack => m_Wrapper.m_Fight_Attack;
         public InputAction @Dash => m_Wrapper.m_Fight_Dash;
         public InputAction @Counter => m_Wrapper.m_Fight_Counter;
+        public InputAction @DistAttack => m_Wrapper.m_Fight_DistAttack;
         public InputActionMap Get() { return m_Wrapper.m_Fight; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -489,6 +512,9 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
             @Counter.started += instance.OnCounter;
             @Counter.performed += instance.OnCounter;
             @Counter.canceled += instance.OnCounter;
+            @DistAttack.started += instance.OnDistAttack;
+            @DistAttack.performed += instance.OnDistAttack;
+            @DistAttack.canceled += instance.OnDistAttack;
         }
 
         private void UnregisterCallbacks(IFightActions instance)
@@ -502,6 +528,9 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
             @Counter.started -= instance.OnCounter;
             @Counter.performed -= instance.OnCounter;
             @Counter.canceled -= instance.OnCounter;
+            @DistAttack.started -= instance.OnDistAttack;
+            @DistAttack.performed -= instance.OnDistAttack;
+            @DistAttack.canceled -= instance.OnDistAttack;
         }
 
         public void RemoveCallbacks(IFightActions instance)
@@ -582,6 +611,7 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
         void OnAttack(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
         void OnCounter(InputAction.CallbackContext context);
+        void OnDistAttack(InputAction.CallbackContext context);
     }
     public interface IRunningActions
     {
