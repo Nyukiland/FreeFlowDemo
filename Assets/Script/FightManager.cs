@@ -71,10 +71,28 @@ public class FightManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        EnemySelection();
         CounterStateControl();
         CounterAct();
         TimerAttackC();
         TimerAttackD();
+    }
+
+    void EnemySelection()
+    {
+        float closestEnnemi = Mathf.Infinity;
+        Vector3 direction = playerMovement.movementVector;
+
+        for(int i = 0; i < enemyList.Count; i++)
+        {
+            float tempD = Vector3.Distance(enemyList[i].transform.position, transform.position);
+
+            if (tempD < closestEnnemi)
+            {
+                closestEnnemi = tempD;
+                currentEnemy = enemyList[i];
+            }
+        }
     }
 
     void TimerAttackC()

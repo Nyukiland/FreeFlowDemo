@@ -31,6 +31,10 @@ public class CameraBehavior : MonoBehaviour
     [SerializeField]
     float sensibilityX = 0.5f;
 
+    [Tooltip("layer to ignore for the camera collision")]
+    [SerializeField]
+    LayerMask layerToIgnore;
+
     float mouseX, mouseY, xRot, yRot;
 
     float distCamPivot;
@@ -86,11 +90,11 @@ public class CameraBehavior : MonoBehaviour
 
     void CamDistCheck()
     {
-        Vector3 direction = cam.transform.position - camPivotY.transform.position;
+        Vector3 direction = cam.transform.TransformPoint(camBasePos) - camPivotY.transform.position;
 
         Ray ray = new Ray(camPivotY.transform.position, direction.normalized);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, distCamPivot*1.65f))
+        if (Physics.Raycast(ray, out hit, distCamPivot*1.65f, ~layerToIgnore))
         {
             Vector3 newPos = hit.point - (direction.normalized * 0.95f);
             if (Vector3.Distance(camPivotY.transform.position, newPos) < distCamPivot) cam.transform.position = newPos;
