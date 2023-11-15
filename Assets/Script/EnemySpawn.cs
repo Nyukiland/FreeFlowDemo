@@ -18,6 +18,7 @@ public class EnemySpawn : MonoBehaviour
 
     float timer;
 
+    int spawned;
 
     // Update is called once per frame
     void Update()
@@ -37,6 +38,8 @@ public class EnemySpawn : MonoBehaviour
         pos = new Vector3(pos.x, 0, pos.y);
 
         GameObject temp = Instantiate(enemyPrefab, pos, Quaternion.identity);
-        temp.GetComponent<EnemyNavmesh>().player = player;
+        temp.GetComponent<Enemy>().player = player;
+        temp.name = "enemy" + spawned;
+        spawned++;
     }
 }

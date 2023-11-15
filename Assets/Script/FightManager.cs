@@ -6,6 +6,10 @@ public class FightManager : MonoBehaviour
 {
     [Header("variable that needs to be set")]
 
+    [Tooltip("Proximity needed to attack the enemy")]
+    [SerializeField]
+    float proximityAttack = 2f;
+
     [Tooltip("Time in which the player is in counter state")]
     [SerializeField]
     float counterTime = 0.2f;
@@ -33,12 +37,13 @@ public class FightManager : MonoBehaviour
     PlayerMovement playerMovement;
 
     GameObject currentEnemy;
+    public GameObject currentActiveEnemy;
 
     bool startAttackC, stopAttackC;
     bool startAttackD, stopAttackD;
     bool counter;
 
-    float timerC = Mathf.Infinity, timerAC = Mathf.Infinity, timerAD = Mathf.Infinity;
+    float timerC = 0, timerAC = 0, timerAD = 0;
 
     #region InputSetUP
     private void Awake()
@@ -72,14 +77,28 @@ public class FightManager : MonoBehaviour
     void Update()
     {
         EnemySelection();
+        EnemyProximity();
+
         CounterStateControl();
         CounterAct();
+
         TimerAttackC();
         TimerAttackD();
     }
 
+    void EnemyProximity()
+    {
+        if (currentEnemy == null) return;
+        if (Vector3.Distance(transform.position, currentEnemy.transform.position) < proximityAttack)
+        {
+            currentActiveEnemy = currentEnemy;
+        }
+    }
+
     void EnemySelection()
     {
+        currentActiveEnemy = null;
+        currentEnemy = null;
         float closestEnnemi = Mathf.Infinity;
         Vector3 direction = playerMovement.movementVector;
 
@@ -106,6 +125,7 @@ public class FightManager : MonoBehaviour
             else AttackClose();
 
             timerAC = 0;
+            stopAttackC = false;
         }
 
         if (startAttackC)
@@ -117,12 +137,12 @@ public class FightManager : MonoBehaviour
 
     void AttackClose()
     {
-
+        if (currentActiveEnemy != null) currentActiveEnemy.GetComponent<Enemy>().EnemyDamage(transform.position + currentActiveEnemy.transform.position, false);
     }
 
     void HardAttackClose()
     {
-
+        if (currentActiveEnemy !=null) currentActiveEnemy.GetComponent<Enemy>().EnemyDamage(transform.position + currentActiveEnemy.transform.position, true);
     }
 
     void TimerAttackD()
@@ -132,16 +152,17 @@ public class FightManager : MonoBehaviour
         if (stopAttackD)
         {
             startAttackD = false;
-            if (timerAD > hardAttackTime) HardAttackDist();
-            else AttackDist();
+            if (timerAD < hardAttackTime) AttackDist();
 
             timerAD = 0;
+            stopAttackD = false;
         }
 
         if (startAttackD)
         {
             stopAttackD = false;
             timerAD += Time.deltaTime;
+            if (timerAD > hardAttackTime) GrabAttackDist();
         }
     }
 
@@ -150,7 +171,7 @@ public class FightManager : MonoBehaviour
 
     }
 
-    void HardAttackDist()
+    void GrabAttackDist()
     {
 
     }

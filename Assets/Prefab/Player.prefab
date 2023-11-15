@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 7559777975314923197}
   - component: {fileID: 5213147084111105798}
   - component: {fileID: 7714844640568270463}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -158,6 +158,9 @@ MonoBehaviour:
   sensibilityY: 150
   clampRot: 30
   sensibilityX: 125
+  layerToIgnore:
+    serializedVersion: 2
+    m_Bits: 72
 --- !u!114 &5213147084111105798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,6 +177,7 @@ MonoBehaviour:
   JumpStrenght: 7.5
   sprintMultiplier: 3
   pivotCam: {fileID: 358657291471964265}
+  movementVector: {x: 0, y: 0, z: 0}
 --- !u!114 &7714844640568270463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,8 +190,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ab3ffa331cb66f4aa74187e40dd0881, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temp: 0
+  proximityAttack: 2
+  counterTime: 0.5
+  hardAttackTime: 1
+  dashStrength: 10
+  moveAttackSpeed: 5
   enemyList: []
+  currentActiveEnemy: {fileID: 0}
 --- !u!1 &358657291471964265
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,7 +383,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 20, y: 20, z: 20}
+  m_LocalScale: {x: 50, y: 50, z: 50}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3643156144657943368}
