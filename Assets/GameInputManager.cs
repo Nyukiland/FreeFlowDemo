@@ -274,6 +274,182 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""BallInput"",
+            ""id"": ""966c20a4-a51b-41f4-998d-603a3a0e6cff"",
+            ""actions"": [
+                {
+                    ""name"": ""Move"",
+                    ""type"": ""Value"",
+                    ""id"": ""b2c59bbf-0703-41e8-b7a3-39b6ab631adf"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ChangeState"",
+                    ""type"": ""Button"",
+                    ""id"": ""28ebc255-9bf3-402e-b01d-a2253d9e14aa"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Grapple"",
+                    ""type"": ""Button"",
+                    ""id"": ""4e87cd02-704c-44ae-bacf-13bb2b1e5c6d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""e90469ea-645e-4de6-af11-3d1762d737f7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""4c3563e8-38c6-4869-bd6f-f34ebf26e0c7"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Keyboard"",
+                    ""id"": ""595f91c6-e4d9-4959-80d5-e0e161ee6309"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""19300212-cb21-49d2-b010-fc68eccbd3c2"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""eeb552bd-27cc-4b8e-b457-8a505b6797dd"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""802bd30d-4f00-4d5c-8b47-e376dd963068"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""eb136e32-ce13-4f3d-b634-fb7fbfa620a0"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2e69dfe0-d1dc-45e2-afc1-8187be1f2f03"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeState"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3a5e5382-d0e7-4b4c-827f-293e403383df"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeState"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2f037b2f-0c5a-4724-88cb-07d01bc1e7a8"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Grapple"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d1066210-e8d1-4a8b-b8ee-218649d31bd3"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Grapple"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5edeed5e-8c1d-4d19-9b76-813d2f12c6b0"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a535f6e5-f22e-438f-aeea-59aa397d7a82"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -297,6 +473,12 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
         // Running
         m_Running = asset.FindActionMap("Running", throwIfNotFound: true);
         m_Running_Newaction = m_Running.FindAction("New action", throwIfNotFound: true);
+        // BallInput
+        m_BallInput = asset.FindActionMap("BallInput", throwIfNotFound: true);
+        m_BallInput_Move = m_BallInput.FindAction("Move", throwIfNotFound: true);
+        m_BallInput_ChangeState = m_BallInput.FindAction("ChangeState", throwIfNotFound: true);
+        m_BallInput_Grapple = m_BallInput.FindAction("Grapple", throwIfNotFound: true);
+        m_BallInput_Jump = m_BallInput.FindAction("Jump", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -594,6 +776,76 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
         }
     }
     public RunningActions @Running => new RunningActions(this);
+
+    // BallInput
+    private readonly InputActionMap m_BallInput;
+    private List<IBallInputActions> m_BallInputActionsCallbackInterfaces = new List<IBallInputActions>();
+    private readonly InputAction m_BallInput_Move;
+    private readonly InputAction m_BallInput_ChangeState;
+    private readonly InputAction m_BallInput_Grapple;
+    private readonly InputAction m_BallInput_Jump;
+    public struct BallInputActions
+    {
+        private @GameInputManager m_Wrapper;
+        public BallInputActions(@GameInputManager wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Move => m_Wrapper.m_BallInput_Move;
+        public InputAction @ChangeState => m_Wrapper.m_BallInput_ChangeState;
+        public InputAction @Grapple => m_Wrapper.m_BallInput_Grapple;
+        public InputAction @Jump => m_Wrapper.m_BallInput_Jump;
+        public InputActionMap Get() { return m_Wrapper.m_BallInput; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(BallInputActions set) { return set.Get(); }
+        public void AddCallbacks(IBallInputActions instance)
+        {
+            if (instance == null || m_Wrapper.m_BallInputActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_BallInputActionsCallbackInterfaces.Add(instance);
+            @Move.started += instance.OnMove;
+            @Move.performed += instance.OnMove;
+            @Move.canceled += instance.OnMove;
+            @ChangeState.started += instance.OnChangeState;
+            @ChangeState.performed += instance.OnChangeState;
+            @ChangeState.canceled += instance.OnChangeState;
+            @Grapple.started += instance.OnGrapple;
+            @Grapple.performed += instance.OnGrapple;
+            @Grapple.canceled += instance.OnGrapple;
+            @Jump.started += instance.OnJump;
+            @Jump.performed += instance.OnJump;
+            @Jump.canceled += instance.OnJump;
+        }
+
+        private void UnregisterCallbacks(IBallInputActions instance)
+        {
+            @Move.started -= instance.OnMove;
+            @Move.performed -= instance.OnMove;
+            @Move.canceled -= instance.OnMove;
+            @ChangeState.started -= instance.OnChangeState;
+            @ChangeState.performed -= instance.OnChangeState;
+            @ChangeState.canceled -= instance.OnChangeState;
+            @Grapple.started -= instance.OnGrapple;
+            @Grapple.performed -= instance.OnGrapple;
+            @Grapple.canceled -= instance.OnGrapple;
+            @Jump.started -= instance.OnJump;
+            @Jump.performed -= instance.OnJump;
+            @Jump.canceled -= instance.OnJump;
+        }
+
+        public void RemoveCallbacks(IBallInputActions instance)
+        {
+            if (m_Wrapper.m_BallInputActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IBallInputActions instance)
+        {
+            foreach (var item in m_Wrapper.m_BallInputActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_BallInputActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public BallInputActions @BallInput => new BallInputActions(this);
     public interface IMovementActions
     {
         void OnLeftRight(InputAction.CallbackContext context);
@@ -616,5 +868,12 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
     public interface IRunningActions
     {
         void OnNewaction(InputAction.CallbackContext context);
+    }
+    public interface IBallInputActions
+    {
+        void OnMove(InputAction.CallbackContext context);
+        void OnChangeState(InputAction.CallbackContext context);
+        void OnGrapple(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
     }
 }
