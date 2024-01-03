@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BallManager : MonoBehaviour
+public class BallRollState : MonoBehaviour
 {
     [SerializeField]
     GameObject visu;
@@ -89,11 +89,11 @@ public class BallManager : MonoBehaviour
     float FallState()
     {
         LayerMask layerToIgnore = gameObject.layer;
-        if (Physics.Raycast(transform.position, Vector3.down, 1.1f, ~layerToIgnore))
+        if (Physics.Raycast(transform.position, Vector3.down, GetComponent<SphereCollider>().radius + 0.1f, ~layerToIgnore))
         {
             return 0f;
         }
-        return -10f * Time.deltaTime;
+        return -20f * Time.deltaTime;
     }
 
     Vector3 SpeedControl(Vector3 direction)
@@ -163,5 +163,17 @@ public class BallManager : MonoBehaviour
                 grappleOBJ = other.gameObject;
             }
         }
+    }
+
+    private void OnEnable()
+    {
+        inputs.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inputs.Disable();
+        if (spring != null) Destroy(spring);
+        line.gameObject.SetActive(false);
     }
 }

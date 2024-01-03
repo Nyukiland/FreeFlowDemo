@@ -314,6 +314,15 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UpDown"",
+                    ""type"": ""Value"",
+                    ""id"": ""9e6ae07b-4760-48cd-b534-83b3e44b8eaf"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -448,6 +457,72 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""controller"",
+                    ""id"": ""0ba3b1fe-5683-46b8-aff0-5fb1df05e5ee"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UpDown"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""5bb9d994-ca82-41bc-bd72-2caedc64c1c2"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UpDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""923c84e2-88c1-4f14-926f-fa38bf7fe9e7"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UpDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""keyboard"",
+                    ""id"": ""6bec68db-9fa4-474b-b413-dc96d8175720"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UpDown"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""221e1125-163f-48d4-865b-49258b9c6713"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UpDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""217b96f4-ed0e-4ab3-8e79-6c8476325040"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UpDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -479,6 +554,7 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
         m_BallInput_ChangeState = m_BallInput.FindAction("ChangeState", throwIfNotFound: true);
         m_BallInput_Grapple = m_BallInput.FindAction("Grapple", throwIfNotFound: true);
         m_BallInput_Jump = m_BallInput.FindAction("Jump", throwIfNotFound: true);
+        m_BallInput_UpDown = m_BallInput.FindAction("UpDown", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -784,6 +860,7 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
     private readonly InputAction m_BallInput_ChangeState;
     private readonly InputAction m_BallInput_Grapple;
     private readonly InputAction m_BallInput_Jump;
+    private readonly InputAction m_BallInput_UpDown;
     public struct BallInputActions
     {
         private @GameInputManager m_Wrapper;
@@ -792,6 +869,7 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
         public InputAction @ChangeState => m_Wrapper.m_BallInput_ChangeState;
         public InputAction @Grapple => m_Wrapper.m_BallInput_Grapple;
         public InputAction @Jump => m_Wrapper.m_BallInput_Jump;
+        public InputAction @UpDown => m_Wrapper.m_BallInput_UpDown;
         public InputActionMap Get() { return m_Wrapper.m_BallInput; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -813,6 +891,9 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @UpDown.started += instance.OnUpDown;
+            @UpDown.performed += instance.OnUpDown;
+            @UpDown.canceled += instance.OnUpDown;
         }
 
         private void UnregisterCallbacks(IBallInputActions instance)
@@ -829,6 +910,9 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @UpDown.started -= instance.OnUpDown;
+            @UpDown.performed -= instance.OnUpDown;
+            @UpDown.canceled -= instance.OnUpDown;
         }
 
         public void RemoveCallbacks(IBallInputActions instance)
@@ -875,5 +959,6 @@ public partial class @GameInputManager: IInputActionCollection2, IDisposable
         void OnChangeState(InputAction.CallbackContext context);
         void OnGrapple(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnUpDown(InputAction.CallbackContext context);
     }
 }
