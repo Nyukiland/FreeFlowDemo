@@ -175,5 +175,6 @@ public class BallRollState : MonoBehaviour
         inputs.Disable();
         if (spring != null) Destroy(spring);
         line.gameObject.SetActive(false);
+        currentMovement = Vector3.zero;
     }
 }

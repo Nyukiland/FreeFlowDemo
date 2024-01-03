@@ -24,6 +24,9 @@ public class BallWalkState : MonoBehaviour
     [SerializeField]
     int numberOfTentacules = 4;
 
+    [SerializeField]
+    Material tentaculeMat;
+
     Vector2 movementXY;
     float movementUp;
 
@@ -64,6 +67,7 @@ public class BallWalkState : MonoBehaviour
             tentacleLines[i].positionCount = 2;
             tentacleLines[i].startWidth = 0.5f;
             tentacleLines[i].endWidth = 0.5f;
+            tentacleLines[i].material = tentaculeMat;
         }
     }
 
@@ -86,8 +90,7 @@ public class BallWalkState : MonoBehaviour
         }
         else
         {
-            rb.velocity += (camDir.transform.forward * movementXY.y) + (camDir.transform.right * movementXY.x);
-            rb.velocity = Vector3.ClampMagnitude(rb.velocity, moveSpeed / 2);
+            rb.velocity += ((camDir.transform.forward * movementXY.y) + (camDir.transform.right * movementXY.x)) * Time.deltaTime;
             rb.velocity += Vector3.down * 20 * Time.deltaTime;
         }
     }
@@ -96,11 +99,11 @@ public class BallWalkState : MonoBehaviour
     {
         if (cols.Length == 0)
         {
-            for (int k = 0; k < numberOfTentacules; k++)
+            for (int h = 0; h < numberOfTentacules; h++)
             {
-                tentacleLines[k].gameObject.SetActive(false);
-                return;
+                tentacleLines[h].gameObject.SetActive(false);
             }
+            return;
         }
 
         int nonColl = numberOfTentacules - cols.Length;
@@ -114,20 +117,34 @@ public class BallWalkState : MonoBehaviour
         for (int j = 0; j < nonColl+1; j++)
         {
             tentacleLines[j].gameObject.SetActive(true);
-            TentaculeUpdate(TentaculePos(), tentacleLines[j]);
+            TentaculeUpdate(TentaculePos(cols), tentacleLines[j]);
         }
     }
 
-    Vector3 TentaculePos()
+    Vector3 TentaculePos(Collider[] cols)
     {
-        Vector3 pos = transform.position + (Random.onUnitSphere * maxTentacleDistance);
-        int attempts = 0;
-
-        while (attempts < 200)
+        Vector3 direction = Vector3.zero;
+        foreach (Collider col in cols)
         {
-            if (Physics.Raycast(transform.position, pos, maxTentacleDistance, layerToIgnore))
+            direction += col.transform.position;
+        }
+        direction /= cols.Length;
+
+        Vector3 randomPos2D = new Vector3(Random.insideUnitCircle.x, 0, Random.insideUnitCircle.y) * maxTentacleDistance;
+        Vector3 pos = transform.position + randomPos2D;
+
+        float rotationAngle = Vector3.Angle(pos - transform.position, direction - transform.position);
+        pos = Quaternion.Euler(0, rotationAngle, 0) * pos;
+
+        int attempts = 0;
+        while (attempts < 20)
+        {
+            Vector3 rayDirection = (pos - transform.position).normalized;
+
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, rayDirection, out hit, maxTentacleDistance, ~layerToIgnore))
             {
-                return pos;
+                return hit.point;
             }
             else
             {
@@ -136,7 +153,6 @@ public class BallWalkState : MonoBehaviour
             }
         }
 
-        Debug.Log("fuck");
         return transform.position;
     }
 
@@ -157,5 +173,10 @@ public class BallWalkState : MonoBehaviour
     private void OnDisable()
     {
         inputs.Disable();
+
+        for (int k = 0; k < numberOfTentacules; k++)
+        {
+            tentacleLines[k].gameObject.SetActive(false);
+        }
     }
 }

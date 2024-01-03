@@ -376,7 +376,8 @@ MonoBehaviour:
     m_Bits: 64
   tentacleLines: []
   maxTentacleDistance: 10
-  numberOfTentacules: 20
+  numberOfTentacules: 10
+  tentaculeMat: {fileID: 2100000, guid: 04e405e92bf07b54282a66a64255c76b, type: 2}
 --- !u!54 &2092236895341715992
 Rigidbody:
   m_ObjectHideFlags: 0
