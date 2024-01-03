@@ -9572,6 +9572,9 @@ MonoBehaviour:
   layerToIgnore:
     serializedVersion: 2
     m_Bits: 64
+  tentacleLines: []
+  maxTentacleDistance: 10
+  numberOfTentacules: 20
 --- !u!114 &8709607040536500735
 MonoBehaviour:
   m_ObjectHideFlags: 0
