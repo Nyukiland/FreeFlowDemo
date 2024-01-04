@@ -150,6 +150,8 @@ public class BallWalkState : MonoBehaviour
         }
     }
 
+    Vector3 temp;
+
     Vector3 TentaculePos(Collider[] cols)
     {
         Vector3 direction = Vector3.zero;
@@ -164,6 +166,7 @@ public class BallWalkState : MonoBehaviour
 
         float rotationAngle = Vector3.Angle(pos - transform.position, direction - transform.position);
         pos = (Quaternion.Euler(0, rotationAngle, 0) * pos);
+        temp = pos;
 
         int attempts = 0;
         while (attempts < 20)
@@ -183,6 +186,13 @@ public class BallWalkState : MonoBehaviour
         }
 
         return transform.position;
+    }
+
+    Vector3 RandomSpotLightCirclePoint(Vector3 dir)
+    {
+        Vector2 circle = Random.insideUnitCircle * maxTentacleDistance/2;
+        Vector3 target = transform.position + dir + transform.rotation * new Vector3(circle.x, circle.y);
+        return target;
     }
 
     void TentaculeUpdate(Vector3 pos, LineRenderer line, int index)
@@ -220,7 +230,7 @@ public class BallWalkState : MonoBehaviour
             posLerping = Vector3.Lerp(transform.position, tentaculePosToGo[index], Mathf.Abs(tentaculeLerp[index]));
         }
 
-        tentaculeLerp[index] -= Time.deltaTime * Random.Range(rngTentaculeLerpSpeed.x, rngTentaculeLerpSpeed.y);
+        tentaculeLerp[index] -= Time.deltaTime * (index + (Random.Range(rngTentaculeLerpSpeed.x, rngTentaculeLerpSpeed.y)/index));
         Mathf.Clamp(tentaculeLerp[index], -1, 1);
         tentacleLines[index].SetPosition(1, posLerping);
     }
@@ -236,7 +246,14 @@ public class BallWalkState : MonoBehaviour
 
         for (int k = 0; k < numberOfTentacules; k++)
         {
-            tentacleLines[k].gameObject.SetActive(false);
+            if (tentacleLines[k] != null) tentacleLines[k].gameObject.SetActive(false);
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.white;
+        Gizmos.DrawLine(transform.position, temp);
+        Gizmos.DrawWireSphere(temp, 1);
     }
 }
