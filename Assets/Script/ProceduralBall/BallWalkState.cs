@@ -27,10 +27,21 @@ public class BallWalkState : MonoBehaviour
     [SerializeField]
     Material tentaculeMat;
 
+    [SerializeField]
+    Vector2 rngTentaculeLerpSpeed;
+
     Vector2 movementXY;
     float movementUp;
 
     Rigidbody rb;
+
+    Vector3 previousPos;
+    int staticReposOnce;
+    float smallTimer;
+
+    Vector3[] tentaculePosToGo;
+    Vector3[] tentaculeStartPos;
+    float[] tentaculeLerp;
 
     private void Awake()
     {
@@ -59,6 +70,10 @@ public class BallWalkState : MonoBehaviour
 
     void TentaculesSetUp()
     {
+        tentaculePosToGo = new Vector3[numberOfTentacules];
+        tentaculeStartPos = new Vector3[numberOfTentacules];
+        tentaculeLerp = new float[numberOfTentacules];
+
         tentacleLines = new LineRenderer[numberOfTentacules];
         for (int i = 0; i < numberOfTentacules; i++)
         {
@@ -68,17 +83,39 @@ public class BallWalkState : MonoBehaviour
             tentacleLines[i].startWidth = 0.5f;
             tentacleLines[i].endWidth = 0.5f;
             tentacleLines[i].material = tentaculeMat;
+
+            tentaculeStartPos[i] = transform.position;
+            tentaculePosToGo[i] = transform.position;
+            tentaculeLerp[i] = 1;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        Collider[] listCol = Physics.OverlapSphere(transform.position, GetComponent<SphereCollider>().radius * 8, ~layerToIgnore);
+        Collider[] listCol = Physics.OverlapSphere(transform.position, GetComponent<SphereCollider>().radius * maxTentacleDistance, ~layerToIgnore);
 
         Move(listCol);
 
         AllTentaculesUpdate(listCol);
+
+        for (int i = 0; i < numberOfTentacules; i++)
+        {
+            SmoothTentacule(i);
+        }
+
+        //this should always be at the end of the update
+        if (previousPos != transform.position)
+        {
+            staticReposOnce = numberOfTentacules;
+        }
+
+        if (smallTimer <= 0)
+        {
+            previousPos = transform.position;
+            smallTimer = 1;
+        }
+        else smallTimer -= Time.deltaTime;
     }
 
     void Move(Collider[] cols)
@@ -99,25 +136,17 @@ public class BallWalkState : MonoBehaviour
     {
         if (cols.Length == 0)
         {
-            for (int h = 0; h < numberOfTentacules; h++)
+            for (int i = 0; i < numberOfTentacules; i++)
             {
-                tentacleLines[h].gameObject.SetActive(false);
+                tentacleLines[i].gameObject.SetActive(false);
             }
             return;
         }
 
-        int nonColl = numberOfTentacules - cols.Length;
-
-        for (int i = 0; i < cols.Length; i++)
-        {
-            tentacleLines[i].gameObject.SetActive(true);
-            TentaculeUpdate(cols[i].ClosestPoint(transform.position), tentacleLines[i]);
-        }
-
-        for (int j = 0; j < nonColl+1; j++)
+        for (int j = 0; j < numberOfTentacules; j++)
         {
             tentacleLines[j].gameObject.SetActive(true);
-            TentaculeUpdate(TentaculePos(cols), tentacleLines[j]);
+            TentaculeUpdate(TentaculePos(cols), tentacleLines[j], j);
         }
     }
 
@@ -134,7 +163,7 @@ public class BallWalkState : MonoBehaviour
         Vector3 pos = transform.position + randomPos2D;
 
         float rotationAngle = Vector3.Angle(pos - transform.position, direction - transform.position);
-        pos = Quaternion.Euler(0, rotationAngle, 0) * pos;
+        pos = (Quaternion.Euler(0, rotationAngle, 0) * pos);
 
         int attempts = 0;
         while (attempts < 20)
@@ -156,13 +185,44 @@ public class BallWalkState : MonoBehaviour
         return transform.position;
     }
 
-    void TentaculeUpdate(Vector3 pos, LineRenderer line)
+    void TentaculeUpdate(Vector3 pos, LineRenderer line, int index)
     {
         line.SetPosition(0, transform.position);
+        
+        if (staticReposOnce >=0 && transform.position == previousPos)
+        {
+            staticReposOnce --;
+            tentaculePosToGo[index] = pos;
+        }
+        
+        if (Vector3.Distance(transform.position, tentaculePosToGo[index]) < maxTentacleDistance + 1) return;
 
-        if (Vector3.Distance(transform.position, line.GetPosition(1)) < maxTentacleDistance + 1 && Vector3.Distance(transform.position, line.GetPosition(1)) > 0.5f) return;
+        tentaculePosToGo[index] = pos;
+    }
 
-        line.SetPosition(1, pos);
+    void SmoothTentacule(int index)
+    {
+        if (tentaculeStartPos[index] == tentaculePosToGo[index]) return;
+
+        Vector3 posLerping = transform.position;
+        if (tentaculeLerp[index] <= -1)
+        {
+            tentaculeStartPos[index] = tentaculePosToGo[index];
+            tentaculeLerp[index] = 1;
+            return;
+        }
+        else if (tentaculeLerp[index] > 0)
+        {
+            posLerping = Vector3.Lerp(transform.position, tentaculeStartPos[index], tentaculeLerp[index]);
+        }
+        else
+        {
+            posLerping = Vector3.Lerp(transform.position, tentaculePosToGo[index], Mathf.Abs(tentaculeLerp[index]));
+        }
+
+        tentaculeLerp[index] -= Time.deltaTime * Random.Range(rngTentaculeLerpSpeed.x, rngTentaculeLerpSpeed.y);
+        Mathf.Clamp(tentaculeLerp[index], -1, 1);
+        tentacleLines[index].SetPosition(1, posLerping);
     }
 
     private void OnEnable()

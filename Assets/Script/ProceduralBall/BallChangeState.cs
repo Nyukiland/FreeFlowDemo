@@ -9,6 +9,11 @@ public class BallChangeState : MonoBehaviour
     bool ballState = true;
 
     [SerializeField]
+    float camSpeed = 0;
+
+    Material baseMat;
+
+    [SerializeField]
     MeshRenderer visu;
 
     [SerializeField]
@@ -31,9 +36,24 @@ public class BallChangeState : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        baseMat = visu.materials[0];
         SetInput();
         ActivateBallState(true);
         ActivateWalkState(false);
+    }
+
+    private void Update()
+    {
+        if (ballState && Camera.main.fieldOfView > 80)
+        {
+            Camera.main.fieldOfView -= Time.deltaTime * camSpeed;
+        }
+        else if (!ballState && Camera.main.fieldOfView < 100)
+        {
+            Camera.main.fieldOfView += Time.deltaTime * camSpeed;
+        }
+
+        Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, 80, 100);
     }
 
     void ChangeState()
@@ -55,12 +75,20 @@ public class BallChangeState : MonoBehaviour
     void ActivateBallState(bool isActive)
     {
         GetComponent<BallRollState>().enabled = isActive;
-        if (isActive) visu.materials[0] = ballMat;
+        if (isActive)
+        {
+            Material[] mats = new Material[2] {baseMat, ballMat};
+            visu.materials = mats;
+        }
     }
 
     void ActivateWalkState(bool isActive)
     {
         GetComponent<BallWalkState>().enabled = isActive;
-        if (isActive) visu.materials[0] = WalkMat;
+        if (isActive)
+        {
+            Material[] mats = new Material[2] { baseMat, WalkMat};
+            visu.materials = mats;
+        }
     }
 }

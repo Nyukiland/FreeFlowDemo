@@ -8900,6 +8900,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: playerContainer
       objectReference: {fileID: 0}
+    - target: {fileID: 7623492208842431466, guid: b35f38ce7dd27db44939cff1b2a848eb, type: 3}
+      propertyPath: camSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7962289332702050272, guid: b35f38ce7dd27db44939cff1b2a848eb, type: 3}
+      propertyPath: tentaculeLerpSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7962289332702050272, guid: b35f38ce7dd27db44939cff1b2a848eb, type: 3}
+      propertyPath: rngTentaculeLerpSpeed.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7962289332702050272, guid: b35f38ce7dd27db44939cff1b2a848eb, type: 3}
+      propertyPath: rngTentaculeLerpSpeed.y
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 9087557759419401475, guid: b35f38ce7dd27db44939cff1b2a848eb, type: 3}
       propertyPath: m_LocalPosition.x
       value: -25.2
