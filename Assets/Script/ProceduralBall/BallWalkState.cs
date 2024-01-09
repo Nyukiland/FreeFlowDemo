@@ -18,8 +18,7 @@ public class BallWalkState : MonoBehaviour
     [SerializeField]
     LineRenderer[] tentacleLines;
 
-    [SerializeField]
-    float maxTentacleDistance = 10f;
+    public float maxTentacleDistance = 10f;
 
     [SerializeField]
     int numberOfTentacules = 4;
@@ -30,8 +29,12 @@ public class BallWalkState : MonoBehaviour
     [SerializeField]
     Vector2 rngTentaculeLerpSpeed;
 
+    bool hasCollider;
+    bool wasTentacule;
+
     Vector2 movementXY;
     float movementUp;
+    Vector3 movementInput;
 
     Rigidbody rb;
 
@@ -41,7 +44,7 @@ public class BallWalkState : MonoBehaviour
 
     Vector3[] tentaculePosToGo;
     Vector3[] tentaculeStartPos;
-    float[] tentaculeLerp;
+    Vector2[] tentaculeLerpValues;
 
     private void Awake()
     {
@@ -72,7 +75,7 @@ public class BallWalkState : MonoBehaviour
     {
         tentaculePosToGo = new Vector3[numberOfTentacules];
         tentaculeStartPos = new Vector3[numberOfTentacules];
-        tentaculeLerp = new float[numberOfTentacules];
+        tentaculeLerpValues = new Vector2[numberOfTentacules];
 
         tentacleLines = new LineRenderer[numberOfTentacules];
         for (int i = 0; i < numberOfTentacules; i++)
@@ -86,16 +89,18 @@ public class BallWalkState : MonoBehaviour
 
             tentaculeStartPos[i] = transform.position;
             tentaculePosToGo[i] = transform.position;
-            tentaculeLerp[i] = 1;
+            tentaculeLerpValues[i] = new(1, Random.Range(rngTentaculeLerpSpeed.x, rngTentaculeLerpSpeed.y));
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        Collider[] listCol = Physics.OverlapSphere(transform.position, GetComponent<SphereCollider>().radius * maxTentacleDistance, ~layerToIgnore);
+        Collider[] listCol = Physics.OverlapSphere(transform.position, GetComponent<SphereCollider>().radius * (maxTentacleDistance - 4), ~layerToIgnore);
 
-        Move(listCol);
+        hasCollider = listCol.Length != 0;
+
+        Move();
 
         AllTentaculesUpdate(listCol);
 
@@ -118,15 +123,24 @@ public class BallWalkState : MonoBehaviour
         else smallTimer -= Time.deltaTime;
     }
 
-    void Move(Collider[] cols)
+    void Move()
     {
-        if (cols.Length != 0)
+        movementInput = (camDir.transform.forward * movementXY.y) + (camDir.transform.right * movementXY.x) + (Vector3.up * movementUp);
+
+        if (hasCollider)
         {
-            Vector3 movement = (camDir.transform.forward * movementXY.y) + (camDir.transform.right * movementXY.x) + (Vector3.up * movementUp);
-            rb.velocity = movement * moveSpeed;
+            Vector3 movement = movementInput * moveSpeed;
+
+            if (movement == Vector3.zero && wasTentacule) movement = rb.velocity * 0.95f;
+
+            rb.velocity = movement;
+
+            wasTentacule = true;
         }
         else
         {
+            wasTentacule = false;
+
             rb.velocity += ((camDir.transform.forward * movementXY.y) + (camDir.transform.right * movementXY.x)) * Time.deltaTime;
             rb.velocity += Vector3.down * 20 * Time.deltaTime;
         }
@@ -134,7 +148,7 @@ public class BallWalkState : MonoBehaviour
 
     void AllTentaculesUpdate(Collider[] cols)
     {
-        if (cols.Length == 0)
+        if (!hasCollider)
         {
             for (int i = 0; i < numberOfTentacules; i++)
             {
@@ -157,15 +171,13 @@ public class BallWalkState : MonoBehaviour
         Vector3 direction = Vector3.zero;
         foreach (Collider col in cols)
         {
-            direction += col.transform.position;
+            direction += (col.ClosestPoint(transform.position) - transform.position).normalized;
         }
         direction /= cols.Length;
 
-        Vector3 randomPos2D = new Vector3(Random.insideUnitCircle.x, 0, Random.insideUnitCircle.y) * maxTentacleDistance;
-        Vector3 pos = transform.position + randomPos2D;
+        Debug.Log(direction.normalized);
 
-        float rotationAngle = Vector3.Angle(pos - transform.position, direction - transform.position);
-        pos = (Quaternion.Euler(0, rotationAngle, 0) * pos);
+        Vector3 pos = GenerateRandomPointOnPlane(direction) + transform.position + (direction * 2) + (movementInput.normalized * 6);
         temp = pos;
 
         int attempts = 0;
@@ -174,13 +186,13 @@ public class BallWalkState : MonoBehaviour
             Vector3 rayDirection = (pos - transform.position).normalized;
 
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, rayDirection, out hit, maxTentacleDistance, ~layerToIgnore))
+            if (Physics.Raycast(transform.position, rayDirection, out hit, maxTentacleDistance * 1.5f, ~layerToIgnore))
             {
                 return hit.point;
             }
             else
             {
-                pos = transform.position + (Random.onUnitSphere * maxTentacleDistance);
+                pos = GenerateRandomPointOnPlane(direction) + transform.position + (direction * 2) + (movementInput.normalized * 6);
                 attempts++;
             }
         }
@@ -188,24 +200,36 @@ public class BallWalkState : MonoBehaviour
         return transform.position;
     }
 
-    Vector3 RandomSpotLightCirclePoint(Vector3 dir)
+    Vector3 GenerateRandomPointOnPlane(Vector3 dir)
     {
-        Vector2 circle = Random.insideUnitCircle * maxTentacleDistance/2;
-        Vector3 target = transform.position + dir + transform.rotation * new Vector3(circle.x, circle.y);
-        return target;
+        Vector3 checkTo = Vector3.forward;
+        if (checkTo == dir) checkTo = Vector3.up;
+
+        // Compute a perpendicular vector to the given upDirection
+        Vector3 perp1 = Vector3.Cross(dir, checkTo).normalized;
+
+        // Compute another perpendicular vector in the plane
+        Vector3 perp2 = Vector3.Cross(dir, perp1).normalized;
+
+        // Generate random point in the plane
+        float randomAngle = Random.Range(0f, 2f * Mathf.PI);
+        float randomRadius = Mathf.Sqrt(Random.Range(0, maxTentacleDistance*2)); // square root to ensure uniform distribution on circle
+        Vector3 randomPoint = perp1 * randomRadius * Mathf.Cos(randomAngle) + perp2 * randomRadius * Mathf.Sin(randomAngle);
+
+        return randomPoint;
     }
 
     void TentaculeUpdate(Vector3 pos, LineRenderer line, int index)
     {
         line.SetPosition(0, transform.position);
-        
-        if (staticReposOnce >=0 && transform.position == previousPos)
+
+        if (staticReposOnce >= 0 && transform.position == previousPos)
         {
-            staticReposOnce --;
+            staticReposOnce--;
             tentaculePosToGo[index] = pos;
         }
-        
-        if (Vector3.Distance(transform.position, tentaculePosToGo[index]) < maxTentacleDistance + 1) return;
+
+        if (Vector3.Distance(transform.position, tentaculePosToGo[index]) < maxTentacleDistance * 1.5) return;
 
         tentaculePosToGo[index] = pos;
     }
@@ -215,23 +239,23 @@ public class BallWalkState : MonoBehaviour
         if (tentaculeStartPos[index] == tentaculePosToGo[index]) return;
 
         Vector3 posLerping = transform.position;
-        if (tentaculeLerp[index] <= -1)
+        if (tentaculeLerpValues[index].x <= -1)
         {
             tentaculeStartPos[index] = tentaculePosToGo[index];
-            tentaculeLerp[index] = 1;
+            tentaculeLerpValues[index] = new(1, Random.Range(rngTentaculeLerpSpeed.x, rngTentaculeLerpSpeed.y));
             return;
         }
-        else if (tentaculeLerp[index] > 0)
+        else if (tentaculeLerpValues[index].x > 0)
         {
-            posLerping = Vector3.Lerp(transform.position, tentaculeStartPos[index], tentaculeLerp[index]);
+            posLerping = Vector3.Lerp(transform.position, tentaculeStartPos[index], tentaculeLerpValues[index].x);
         }
         else
         {
-            posLerping = Vector3.Lerp(transform.position, tentaculePosToGo[index], Mathf.Abs(tentaculeLerp[index]));
+            posLerping = Vector3.Lerp(transform.position, tentaculePosToGo[index], Mathf.Abs(tentaculeLerpValues[index].x));
         }
 
-        tentaculeLerp[index] -= Time.deltaTime * (index + (Random.Range(rngTentaculeLerpSpeed.x, rngTentaculeLerpSpeed.y)/index));
-        Mathf.Clamp(tentaculeLerp[index], -1, 1);
+        tentaculeLerpValues[index].x -= Time.deltaTime * (index + (tentaculeLerpValues[index].y) / index);
+        Mathf.Clamp(tentaculeLerpValues[index].x, -1, 1);
         tentacleLines[index].SetPosition(1, posLerping);
     }
 
@@ -255,5 +279,6 @@ public class BallWalkState : MonoBehaviour
         Gizmos.color = Color.white;
         Gizmos.DrawLine(transform.position, temp);
         Gizmos.DrawWireSphere(temp, 1);
+        Gizmos.DrawWireSphere(transform.position, maxTentacleDistance);
     }
 }

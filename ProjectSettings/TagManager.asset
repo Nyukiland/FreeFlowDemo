@@ -7,6 +7,7 @@ TagManager:
   - Enemy
   - Null
   - Grapple
+  - ennemiSphere
   layers:
   - Default
   - TransparentFX
@@ -15,7 +16,7 @@ TagManager:
   - Water
   - UI
   - Player
-  - 
+  - EnnemyBall
   - 
   - 
   - 

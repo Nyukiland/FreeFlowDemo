@@ -77,6 +77,8 @@ public class BallChangeState : MonoBehaviour
         GetComponent<BallRollState>().enabled = isActive;
         if (isActive)
         {
+            GetComponent<SphereCollider>().radius = 1;
+
             Material[] mats = new Material[2] {baseMat, ballMat};
             visu.materials = mats;
         }
@@ -87,6 +89,8 @@ public class BallChangeState : MonoBehaviour
         GetComponent<BallWalkState>().enabled = isActive;
         if (isActive)
         {
+            GetComponent<SphereCollider>().radius = GetComponent<BallWalkState>().maxTentacleDistance / 3;
+
             Material[] mats = new Material[2] { baseMat, WalkMat};
             visu.materials = mats;
         }
