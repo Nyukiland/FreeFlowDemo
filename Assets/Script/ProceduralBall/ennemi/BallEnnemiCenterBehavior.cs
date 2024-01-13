@@ -13,6 +13,8 @@ public class BallEnnemiCenterBehavior : MonoBehaviour
     [SerializeField]
     LayerMask layerToIgnore;
 
+    Vector3 nextDirection = new Vector3(0, 1, 0);
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -29,6 +31,8 @@ public class BallEnnemiCenterBehavior : MonoBehaviour
     {
         if (!collision.collider.CompareTag("ennemiSphere"))
         {
+            nextDirection = -(collision.collider.ClosestPoint(transform.position) - transform.position);
+            nextDirection = nextDirection.normalized;
             StartCoroutine(jumpprocess());
         }
     }
@@ -39,13 +43,15 @@ public class BallEnnemiCenterBehavior : MonoBehaviour
 
         yield return new WaitForSeconds(3);
 
-        Vector3 dir = Random.insideUnitSphere;
-        while(Physics.Raycast(transform.position, dir, 5f, ~layerToIgnore))
+        Vector3 dir = new Vector3(Random.Range(nextDirection.x - 0.5f, nextDirection.x + 0.5f), Random.Range(nextDirection.y - 0.5f, nextDirection.y + 0.5f), Random.Range(nextDirection.z - 0.5f, nextDirection.z + 0.5f));
+        while (Physics.Raycast(transform.position, dir.normalized, 5f, ~layerToIgnore))
         {
-            dir = Random.insideUnitSphere;
+            dir = new Vector3(Random.Range(nextDirection.x - 0.5f, nextDirection.x + 0.5f), Random.Range(nextDirection.y - 0.5f, nextDirection.y + 0.5f), Random.Range(nextDirection.z - 0.5f, nextDirection.z + 0.5f));
         }
 
+        Debug.Log(dir.normalized * 10);
+
         rb.isKinematic = false;
-        rb.AddForce(dir * 10, ForceMode.Impulse);
+        rb.AddForce(dir.normalized * 10, ForceMode.Impulse);
     }
 }

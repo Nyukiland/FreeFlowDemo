@@ -181,7 +181,7 @@ public class BallWalkState : MonoBehaviour
         temp = pos;
 
         int attempts = 0;
-        while (attempts < 20)
+        while (attempts < 50)
         {
             Vector3 rayDirection = (pos - transform.position).normalized;
 
@@ -196,7 +196,7 @@ public class BallWalkState : MonoBehaviour
                 attempts++;
             }
         }
-
+        Debug.Log("Nonononono");
         return transform.position;
     }
 
