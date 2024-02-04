@@ -6,10 +6,6 @@ public class FightManager : MonoBehaviour
 {
     [Header("variable that needs to be set")]
 
-    [Tooltip("Proximity needed to attack the enemy")]
-    [SerializeField]
-    float proximityAttack = 2f;
-
     [Tooltip("Time in which the player is in counter state")]
     [SerializeField]
     float counterTime = 0.2f;
@@ -26,24 +22,34 @@ public class FightManager : MonoBehaviour
     [SerializeField]
     float moveAttackSpeed = 5;
 
+    [Tooltip("the tolerence for the enemy selection when the joystick is used")]
+    [SerializeField]
+    float sphereCastR = 5;
+
+    [Tooltip("distance at which the far can no longer touch")]
+    [SerializeField]
+    float farMax = 5;
+
+    [Tooltip("distance at which the close can no longer touch")]
+    [SerializeField]
+    float closeMax = 5;
+
+    [Tooltip("the layers that can be considered by the fight system")]
+    [SerializeField]
+    LayerMask enemyLayer;
+
     [Header("public variable do not touch")]
 
     public List<GameObject> enemyList;
-
 
     //private variable
     GameInputManager inputPlayer;
 
     PlayerMovement playerMovement;
 
-    GameObject currentEnemy;
-    public GameObject currentActiveEnemy;
+    GameObject closeEnemy, farEnemy;
 
-    bool startAttackC, stopAttackC;
-    bool startAttackD, stopAttackD;
-    bool counter;
-
-    float timerC = 0, timerAC = 0, timerAD = 0;
+    float timerC = 0;
 
     #region InputSetUP
     private void Awake()
@@ -54,11 +60,9 @@ public class FightManager : MonoBehaviour
 
     void InitializeInput()
     {
-        inputPlayer.Fight.Attack.performed += ctx => startAttackC = true;
-        inputPlayer.Fight.Attack.canceled += ctx => stopAttackC = true;
+        inputPlayer.Fight.Attack.performed += ctx => AttackClose();
 
-        inputPlayer.Fight.DistAttack.performed += ctx => startAttackD = true;
-        inputPlayer.Fight.DistAttack.canceled += ctx => stopAttackD = true;
+        inputPlayer.Fight.DistAttack.performed += ctx => AttackDist();
 
         inputPlayer.Fight.Counter.performed += ctx => timerC = 0;
         inputPlayer.Fight.Dash.performed += ctx => StartCoroutine(DashAction());
@@ -77,93 +81,47 @@ public class FightManager : MonoBehaviour
     void Update()
     {
         EnemySelection();
-        EnemyProximity();
 
         CounterStateControl();
         CounterAct();
-
-        TimerAttackC();
-        TimerAttackD();
-    }
-
-    void EnemyProximity()
-    {
-        if (currentEnemy == null) return;
-        if (Vector3.Distance(transform.position, currentEnemy.transform.position) < proximityAttack)
-        {
-            currentActiveEnemy = currentEnemy;
-        }
     }
 
     void EnemySelection()
     {
-        currentActiveEnemy = null;
-        currentEnemy = null;
-        float closestEnnemi = Mathf.Infinity;
         Vector3 direction = playerMovement.movementVector;
+
+        if (direction != Vector3.zero)
+        {
+            RaycastHit hit;
+            if(Physics.SphereCast(transform.position, sphereCastR, direction, out hit, farMax, enemyLayer))
+            {
+                if (hit.collider.gameObject != null)
+                {
+                    if (closeEnemy == null && Vector3.Distance(hit.transform.position, transform.position) < closeMax) closeEnemy = hit.collider.gameObject;
+                    else farEnemy = hit.collider.gameObject;
+                }
+            }
+        }
+
+
+        float closestEnemy = Mathf.Infinity;
+        float enemy = Mathf.Infinity;
 
         for(int i = 0; i < enemyList.Count; i++)
         {
             float tempD = Vector3.Distance(enemyList[i].transform.position, transform.position);
 
-            if (tempD < closestEnnemi)
+            if (tempD < closestEnemy)
             {
-                closestEnnemi = tempD;
-                currentEnemy = enemyList[i];
+                closestEnemy = tempD;
+                enemy = i;
             }
-        }
-    }
-
-    void TimerAttackC()
-    {
-        if (!startAttackC || startAttackD || counter) return;
-
-        if (stopAttackC)
-        {
-            startAttackC = false;
-            if (timerAC > hardAttackTime) HardAttackClose();
-            else AttackClose();
-
-            timerAC = 0;
-            stopAttackC = false;
-        }
-
-        if (startAttackC)
-        {
-            stopAttackC = false;
-            timerAC += Time.deltaTime;
         }
     }
 
     void AttackClose()
     {
-        if (currentActiveEnemy != null) currentActiveEnemy.GetComponent<Enemy>().EnemyDamage(transform.position + currentActiveEnemy.transform.position, false);
-    }
-
-    void HardAttackClose()
-    {
-        if (currentActiveEnemy !=null) currentActiveEnemy.GetComponent<Enemy>().EnemyDamage(transform.position + currentActiveEnemy.transform.position, true);
-    }
-
-    void TimerAttackD()
-    {
-        if (!startAttackD || startAttackC || counter) return;
-
-        if (stopAttackD)
-        {
-            startAttackD = false;
-            if (timerAD < hardAttackTime) AttackDist();
-
-            timerAD = 0;
-            stopAttackD = false;
-        }
-
-        if (startAttackD)
-        {
-            stopAttackD = false;
-            timerAD += Time.deltaTime;
-            if (timerAD > hardAttackTime) GrabAttackDist();
-        }
+        closeEnemy.GetComponent<Enemy>().EnemyDamage(transform.position + closeEnemy.transform.position, false);
     }
 
     void AttackDist()
@@ -181,11 +139,10 @@ public class FightManager : MonoBehaviour
         if (timerC < counterTime)
         {
             timerC += Time.deltaTime;
-            counter = true;
         }
         else
         {
-            counter = false;
+            
         }
     }
 
@@ -205,10 +162,10 @@ public class FightManager : MonoBehaviour
             //dash in the direction of the stick
             GetComponent<Rigidbody>().AddForce(playerMovement.movementVector * dashStrength, ForceMode.Impulse);
         }
-        else if (currentEnemy != null)
+        else if (closeEnemy != null)
         {
             //dash in the opposite direction of the enemy
-            Vector3 dir = transform.position - currentEnemy.transform.position;
+            Vector3 dir = transform.position - closeEnemy.transform.position;
             dir = -dir.normalized;
 
             GetComponent<Rigidbody>().AddForce(dir * dashStrength, ForceMode.Impulse);

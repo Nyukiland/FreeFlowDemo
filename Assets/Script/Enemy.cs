@@ -14,6 +14,9 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     GameObject[] lifeCount;
 
+    [SerializeField]
+    GameObject visu;
+
     public GameObject player;
 
     FightManager manager;
@@ -36,6 +39,8 @@ public class Enemy : MonoBehaviour
         if (nav.enabled) nav.SetDestination(player.transform.position);
 
         HealthLookAtCamera();
+
+        visu.transform.LookAt(player.transform.position);
     }
 
     void HealthLookAtCamera()
