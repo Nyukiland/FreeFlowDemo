@@ -22,13 +22,12 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("camera for players direction, if the camera is not fix")]
     public GameObject pivotCam;
 
-    //public variable
-    [Space(2)]
-    [Header("public varible (no need to touch)")]
-
+    [HideInInspector]
     public Vector3 movementVector;
 
-    //private variable
+    [HideInInspector]
+    public bool canMove = true;
+
     Rigidbody character;
 
     GameInputManager inputPlayer;
@@ -77,9 +76,11 @@ public class PlayerMovement : MonoBehaviour
     //set the velocity of the object to the new vector + the y velocity
     void Movement()
     {
-        float vetVelo = character.velocity.y;
-
         movementVector = (pivotCam.transform.forward * moveX) + (pivotCam.transform.right * moveZ);
+
+        if (!canMove) return;
+
+        float vetVelo = character.velocity.y;
 
         movementVector = Vector3.ClampMagnitude(movementVector, 1) * speed * isSprint;
 

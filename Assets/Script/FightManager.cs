@@ -61,7 +61,7 @@ public class FightManager : MonoBehaviour
         inputPlayer.Fight.DistAttack.canceled += ctx => stopAttackD = true;
 
         inputPlayer.Fight.Counter.performed += ctx => timerC = 0;
-        inputPlayer.Fight.Dash.performed += ctx => Dash();
+        inputPlayer.Fight.Dash.performed += ctx => StartCoroutine(DashAction());
     }
 
     #endregion
@@ -194,8 +194,12 @@ public class FightManager : MonoBehaviour
 
     }
 
-    void Dash()
+    IEnumerator DashAction()
     {
+        //remove the player movement during dash
+        playerMovement.canMove = false;
+
+        //actual dash
         if (playerMovement.movementVector != Vector3.zero)
         {
             //dash in the direction of the stick
@@ -205,7 +209,7 @@ public class FightManager : MonoBehaviour
         {
             //dash in the opposite direction of the enemy
             Vector3 dir = transform.position - currentEnemy.transform.position;
-            dir = - dir.normalized;
+            dir = -dir.normalized;
 
             GetComponent<Rigidbody>().AddForce(dir * dashStrength, ForceMode.Impulse);
         }
@@ -214,5 +218,10 @@ public class FightManager : MonoBehaviour
             //dash forward
             GetComponent<Rigidbody>().AddForce(playerMovement.pivotCam.transform.forward * dashStrength, ForceMode.Impulse);
         }
+
+        yield return new WaitForSeconds(1f);
+
+        //restore dash
+        playerMovement.canMove = true;
     }
 }
