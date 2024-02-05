@@ -37,8 +37,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _ASEOutlineWidth: 0
+    - _ASEOutlineWidth: 0.18
+    - _Outlinesize: 0
     - __dirty: 0
+    - _dotnumbers: 100
+    - _dotnumbers1: 100
     - _etage: 8
     m_Colors:
     - _ASEOutlineColor: {r: 0, g: 0, b: 0, a: 0}

@@ -41,6 +41,7 @@ public class Enemy : MonoBehaviour
         HealthLookAtCamera();
 
         visu.transform.LookAt(player.transform.position);
+        visu.transform.localEulerAngles = new(0, visu.transform.localEulerAngles.y, 0);
     }
 
     void HealthLookAtCamera()

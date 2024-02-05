@@ -16,7 +16,11 @@ public class FightManager : MonoBehaviour
 
     [Tooltip("the force given to the player for the dash")]
     [SerializeField]
-    float dashStrength = 10;
+    AnimationCurve dashStrength;
+
+    [Tooltip("the duration of the dash")]
+    [SerializeField]
+    float dashDuration = 0.25f;
 
     [Tooltip("the force given to the player for the dash")]
     [SerializeField]
@@ -38,10 +42,6 @@ public class FightManager : MonoBehaviour
     [SerializeField]
     LayerMask enemyLayer;
 
-    [Header("public variable do not touch")]
-
-    public List<GameObject> enemyList;
-
     //private variable
     GameInputManager inputPlayer;
 
@@ -50,6 +50,10 @@ public class FightManager : MonoBehaviour
     GameObject closeEnemy, farEnemy;
 
     float timerC = 0;
+
+    bool isDash;
+    float dashTimer;
+    Vector2 dashDir;
 
     #region InputSetUP
     private void Awake()
@@ -65,7 +69,7 @@ public class FightManager : MonoBehaviour
         inputPlayer.Fight.DistAttack.performed += ctx => AttackDist();
 
         inputPlayer.Fight.Counter.performed += ctx => timerC = 0;
-        inputPlayer.Fight.Dash.performed += ctx => StartCoroutine(DashAction());
+        inputPlayer.Fight.Dash.performed += ctx => CallOnDash();
     }
 
     #endregion
@@ -82,6 +86,8 @@ public class FightManager : MonoBehaviour
     {
         EnemySelection();
 
+        Dash();
+
         CounterStateControl();
         CounterAct();
     }
@@ -97,17 +103,23 @@ public class FightManager : MonoBehaviour
             {
                 if (hit.collider.gameObject != null)
                 {
-                    if (closeEnemy == null && Vector3.Distance(hit.transform.position, transform.position) < closeMax) closeEnemy = hit.collider.gameObject;
+                    if (Vector3.Distance(hit.transform.position, transform.position) < closeMax)
+                    {
+                        closeEnemy = hit.collider.gameObject;
+                    }
                     else farEnemy = hit.collider.gameObject;
                 }
             }
         }
 
+        if (closeEnemy != null) return;
 
         float closestEnemy = Mathf.Infinity;
         float enemy = Mathf.Infinity;
 
-        for(int i = 0; i < enemyList.Count; i++)
+        Collider[] enemyList = Physics.OverlapSphere(transform.position, closeMax);
+
+        for(int i = 0; i < enemyList.Length; i++)
         {
             float tempD = Vector3.Distance(enemyList[i].transform.position, transform.position);
 
@@ -117,6 +129,8 @@ public class FightManager : MonoBehaviour
                 enemy = i;
             }
         }
+
+        closeEnemy = enemyList[(int)enemy].gameObject;
     }
 
     void AttackClose()
@@ -126,7 +140,7 @@ public class FightManager : MonoBehaviour
 
     void AttackDist()
     {
-
+        if (farEnemy != null) farEnemy.GetComponent<Enemy>().EnemyDamage(transform.position + closeEnemy.transform.position, false);
     }
 
     void GrabAttackDist()
@@ -151,34 +165,46 @@ public class FightManager : MonoBehaviour
 
     }
 
-    IEnumerator DashAction()
+    void CallOnDash()
     {
-        //remove the player movement during dash
-        playerMovement.canMove = false;
+        if (!isDash)
+        {
+            isDash = true;
+            dashTimer = 0;
+            dashDir = GetDashDir();
+            playerMovement.canMove = false;
+        }
+    }
 
-        //actual dash
+    Vector2 GetDashDir()
+    {
         if (playerMovement.movementVector != Vector3.zero)
         {
-            //dash in the direction of the stick
-            GetComponent<Rigidbody>().AddForce(playerMovement.movementVector * dashStrength, ForceMode.Impulse);
+            return playerMovement.movementVector;
         }
         else if (closeEnemy != null)
         {
-            //dash in the opposite direction of the enemy
             Vector3 dir = transform.position - closeEnemy.transform.position;
             dir = -dir.normalized;
-
-            GetComponent<Rigidbody>().AddForce(dir * dashStrength, ForceMode.Impulse);
+            return dir;
         }
         else
         {
-            //dash forward
-            GetComponent<Rigidbody>().AddForce(playerMovement.pivotCam.transform.forward * dashStrength, ForceMode.Impulse);
+            return playerMovement.pivotCam.transform.forward;
+        }
+    }
+
+    void Dash()
+    {
+        if (dashTimer >= dashDuration)
+        {
+            playerMovement.canMove = true;
+            isDash = false;
+            return;
         }
 
-        yield return new WaitForSeconds(1f);
+        dashTimer += Time.deltaTime;
 
-        //restore dash
-        playerMovement.canMove = true;
+        GetComponent<Rigidbody>().velocity = dashDir * dashStrength.Evaluate(dashTimer/dashDuration);
     }
 }

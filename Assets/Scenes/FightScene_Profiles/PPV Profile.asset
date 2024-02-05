@@ -26,10 +26,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05d09f134f5de0741aa237d09ee7093b, type: 3}
   m_Name: PostProcessShaderPPSSettings
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   enabled:
     overrideState: 1
     value: 1
   _Color0:
     overrideState: 0
-    value: {r: 0.4245283, g: 0.4101104, b: 0.4101104, a: 0.454902}
+    value: {r: 0.6792453, g: 0.17621931, b: 0.17621931, a: 1}
