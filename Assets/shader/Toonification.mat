@@ -37,10 +37,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _ASEOutlineWidth: 0
     - __dirty: 0
     - _etage: 8
     m_Colors:
+    - _ASEOutlineColor: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 0.2214756, g: 0.4568726, b: 0.745283, a: 0}
+    - _Color2: {r: 0.6509434, g: 0.32792807, b: 0.32792807, a: 0}
     - _Scale_Offset: {r: 10, g: 0, b: 0, a: 0}
     - _outline: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
