@@ -19,7 +19,6 @@ public class Enemy : MonoBehaviour
 
     public GameObject player;
 
-    FightManager manager;
     NavMeshAgent nav;
     Rigidbody rb;
 
@@ -27,7 +26,6 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
-        manager = player.GetComponent<FightManager>();
         nav = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
 
@@ -57,12 +55,6 @@ public class Enemy : MonoBehaviour
 
         if (intLifeCount >= 0) return;
 
-        if (manager.enemyList.Contains(this.gameObject))
-        {
-            transform.tag = "Null";
-            manager.enemyList.Remove(this.gameObject);
-        }
-
         nav.enabled = false;
         rb.isKinematic = false;
 
@@ -88,5 +80,11 @@ public class Enemy : MonoBehaviour
     void DestroyGameObject()
     {
         Destroy(this.gameObject);
+    }
+
+    public void IsCurrentFight(bool isTheCurrentClose)
+    {
+        if (isTheCurrentClose) nav.enabled = false;
+        else nav.enabled = true;
     }
 }

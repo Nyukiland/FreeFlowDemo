@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PPV Profile
   m_EditorClassIdentifier: 
   settings:
-  - {fileID: 1426700662228510367}
+  - {fileID: 3372391619928779677}
 --- !u!114 &1426700662228510367
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -33,3 +33,22 @@ MonoBehaviour:
   _Color0:
     overrideState: 0
     value: {r: 0.6792453, g: 0.17621931, b: 0.17621931, a: 1}
+--- !u!114 &3372391619928779677
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05d09f134f5de0741aa237d09ee7093b, type: 3}
+  m_Name: PostProcessShaderPPSSettings
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 1
+  _Color0:
+    overrideState: 0
+    value: {r: 0.4245283, g: 0.4101104, b: 0.4101104, a: 0.454902}

@@ -1369,17 +1369,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ab3ffa331cb66f4aa74187e40dd0881, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  counterTime: 0.5
-  hardAttackTime: 0.2
-  dashStrength: 10
-  moveAttackSpeed: 5
   sphereCastR: 5
   farMax: 5
   closeMax: 5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 8
-  enemyList: []
+  dashStrength:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  dashDuration: 0.25
+  counterTime: 0.5
+  baseFightMoveSpeed: 5
+  maxFightMoveSpeed: 5
+  moveSpeedAdded: 5
+  comboText: {fileID: 0}
+  maxTimeFight: 0
 --- !u!33 &890929914359826766
 MeshFilter:
   m_ObjectHideFlags: 0

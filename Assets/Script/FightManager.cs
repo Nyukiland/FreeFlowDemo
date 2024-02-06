@@ -1,30 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class FightManager : MonoBehaviour
 {
-    [Header("variable that needs to be set")]
-
-    [Tooltip("Time in which the player is in counter state")]
-    [SerializeField]
-    float counterTime = 0.2f;
-
-    [Tooltip("how long the player should hold for a hard attack")]
-    [SerializeField]
-    float hardAttackTime = 0.1f;
-
-    [Tooltip("the force given to the player for the dash")]
-    [SerializeField]
-    AnimationCurve dashStrength;
-
-    [Tooltip("the duration of the dash")]
-    [SerializeField]
-    float dashDuration = 0.25f;
-
-    [Tooltip("the force given to the player for the dash")]
-    [SerializeField]
-    float moveAttackSpeed = 5;
+    [Header("Enemy detection")]
 
     [Tooltip("the tolerence for the enemy selection when the joystick is used")]
     [SerializeField]
@@ -42,18 +23,81 @@ public class FightManager : MonoBehaviour
     [SerializeField]
     LayerMask enemyLayer;
 
+    //----------------------
+    [Space (5)]
+    [Header ("Dash")]
+
+    [Tooltip("the force given to the player for the dash")]
+    [SerializeField]
+    AnimationCurve dashStrength;
+
+    [Tooltip("the duration of the dash")]
+    [SerializeField]
+    float dashDuration = 0.25f;
+
+    //-----------------
+    [Space(5)]
+    [Header("Counter")]
+
+    [Tooltip("Time in which the player is in counter state")]
+    [SerializeField]
+    float counterTime = 0.2f;
+
+    //-----------------
+    [Space(5)]
+    [Header("attackSpeed")]
+
+    [Tooltip("the force given to the player for the dash")]
+    [SerializeField]
+    float baseFightMoveSpeed = 2;
+
+    [Tooltip("the max speed that the player will reach when combo")]
+    [SerializeField]
+    float maxFightMoveSpeed = 5;
+
+    [Tooltip("the amount of speed added for each new point in the combo")]
+    [SerializeField]
+    float moveSpeedAdded = 0.1f;
+
+    //-----------------
+    [Space(5)]
+    [Header("Other Attack Related")]
+
+    [Tooltip("Combo Text")]
+    [SerializeField]
+    TextMeshProUGUI comboText;
+
+    [Tooltip("Max time whithout attacking before the combo is lost")]
+    [SerializeField]
+    float maxTimeFight;
+
+    [Space(5)]
+    [Header("Other")]
+
+    [SerializeField]
+    GameObject pivotCam;
+
     //private variable
     GameInputManager inputPlayer;
 
     PlayerMovement playerMovement;
 
-    GameObject closeEnemy, farEnemy;
+    GameObject focusedEnemy, closeEnemy, farEnemy;
 
     float timerC = 0;
 
-    bool isDash;
-    float dashTimer;
+    bool isDash = false;
+    float dashTimer =0;
     Vector2 dashDir;
+
+    float currentCombo;
+
+    float fightMoveSpeed;
+
+    float LerpPos;
+    bool doLerp;
+    Vector3 startLerpPos, startLerpRot;
+    Vector3 endLerpPos, endLerpRot;
 
     #region InputSetUP
     private void Awake()
@@ -86,6 +130,8 @@ public class FightManager : MonoBehaviour
     {
         EnemySelection();
 
+        GoToEnemy();
+
         Dash();
 
         CounterStateControl();
@@ -117,7 +163,7 @@ public class FightManager : MonoBehaviour
         float closestEnemy = Mathf.Infinity;
         float enemy = Mathf.Infinity;
 
-        Collider[] enemyList = Physics.OverlapSphere(transform.position, closeMax);
+        Collider[] enemyList = Physics.OverlapSphere(transform.position, closeMax/2, enemyLayer);
 
         for(int i = 0; i < enemyList.Length; i++)
         {
@@ -133,19 +179,63 @@ public class FightManager : MonoBehaviour
         closeEnemy = enemyList[(int)enemy].gameObject;
     }
 
+    void GoToEnemy()
+    {
+        if (!doLerp) return;
+
+        if (LerpPos >= 1)
+        {
+            doLerp = false;
+            LerpPos = 0;
+
+            playerMovement.enabled = true;
+            GetComponent<CameraBehavior>().enabled = true;
+
+            focusedEnemy = closeEnemy;
+
+            //call again to hit
+            AttackClose();
+        }
+
+        if (LerpPos == 0)
+        {
+            //focusedEnemy?.GetComponent<Enemy>().IsCurrentFight(false);
+            //closeEnemy.GetComponent<Enemy>().IsCurrentFight(true);
+
+            startLerpPos = transform.position;
+            startLerpRot = transform.eulerAngles;
+
+            endLerpPos = closeEnemy.transform.position + ((closeEnemy.transform.position - transform.position).normalized * 0.1f);
+            //endLerpRot = ;
+
+            playerMovement.enabled = false;
+            GetComponent<CameraBehavior>().enabled = false;
+        }
+
+        //Vector3.Lerp();
+
+        LerpPos += Time.deltaTime;
+    }
+
     void AttackClose()
     {
-        closeEnemy.GetComponent<Enemy>().EnemyDamage(transform.position + closeEnemy.transform.position, false);
+        if (!VerifyCanAct()) return;
+
+        if (focusedEnemy != closeEnemy)
+        {
+            doLerp = true;
+            return;
+        }
+
+        focusedEnemy?.GetComponent<Enemy>().EnemyDamage(transform.position + closeEnemy.transform.position, false);
     }
 
     void AttackDist()
     {
+        if (!VerifyCanAct()) return;
+
         if (farEnemy != null) farEnemy.GetComponent<Enemy>().EnemyDamage(transform.position + closeEnemy.transform.position, false);
-    }
-
-    void GrabAttackDist()
-    {
-
+        else if (closeEnemy != null) closeEnemy.GetComponent<Enemy>().EnemyDamage(transform.position + closeEnemy.transform.position, false);
     }
 
     void CounterStateControl()
@@ -206,5 +296,11 @@ public class FightManager : MonoBehaviour
         dashTimer += Time.deltaTime;
 
         GetComponent<Rigidbody>().velocity = dashDir * dashStrength.Evaluate(dashTimer/dashDuration);
+    }
+
+    bool VerifyCanAct()
+    {
+        if (isDash || doLerp) return false;
+        else return true;
     }
 }
