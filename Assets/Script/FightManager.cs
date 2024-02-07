@@ -123,6 +123,8 @@ public class FightManager : MonoBehaviour
         InitializeInput();
 
         playerMovement = GetComponent<PlayerMovement>();
+
+        fightMoveSpeed = baseFightMoveSpeed;
     }
 
     // Update is called once per frame
@@ -176,7 +178,7 @@ public class FightManager : MonoBehaviour
             }
         }
 
-        closeEnemy = enemyList[(int)enemy].gameObject;
+        if (enemy < enemyList.Length) closeEnemy = enemyList[(int)enemy].gameObject;
     }
 
     void GoToEnemy()
@@ -189,12 +191,13 @@ public class FightManager : MonoBehaviour
             LerpPos = 0;
 
             playerMovement.enabled = true;
-            GetComponent<CameraBehavior>().enabled = true;
 
             focusedEnemy = closeEnemy;
 
             //call again to hit
             AttackClose();
+
+            return;
         }
 
         if (LerpPos == 0)
@@ -209,12 +212,13 @@ public class FightManager : MonoBehaviour
             //endLerpRot = ;
 
             playerMovement.enabled = false;
-            GetComponent<CameraBehavior>().enabled = false;
+
+            //Debug.Log("wtf");
         }
 
-        //Vector3.Lerp();
+        transform.position = Vector3.Lerp(startLerpPos, endLerpPos, LerpPos);
 
-        LerpPos += Time.deltaTime;
+        LerpPos += Time.deltaTime * fightMoveSpeed;
     }
 
     void AttackClose()
@@ -227,7 +231,7 @@ public class FightManager : MonoBehaviour
             return;
         }
 
-        focusedEnemy?.GetComponent<Enemy>().EnemyDamage(transform.position + closeEnemy.transform.position, false);
+        if(focusedEnemy != null) focusedEnemy.GetComponent<Enemy>().EnemyDamage(transform.position + closeEnemy.transform.position, false);
     }
 
     void AttackDist()
@@ -257,6 +261,8 @@ public class FightManager : MonoBehaviour
 
     void CallOnDash()
     {
+        if (!VerifyCanAct()) return;
+
         if (!isDash)
         {
             isDash = true;
@@ -302,5 +308,10 @@ public class FightManager : MonoBehaviour
     {
         if (isDash || doLerp) return false;
         else return true;
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.DrawWireSphere(transform.position, closeMax/2);
     }
 }

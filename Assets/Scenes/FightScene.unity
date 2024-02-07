@@ -1369,9 +1369,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ab3ffa331cb66f4aa74187e40dd0881, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sphereCastR: 5
-  farMax: 5
-  closeMax: 5
+  sphereCastR: 2.5
+  farMax: 60
+  closeMax: 25
   enemyLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -1388,6 +1388,7 @@ MonoBehaviour:
   moveSpeedAdded: 5
   comboText: {fileID: 0}
   maxTimeFight: 0
+  pivotCam: {fileID: 0}
 --- !u!33 &890929914359826766
 MeshFilter:
   m_ObjectHideFlags: 0
