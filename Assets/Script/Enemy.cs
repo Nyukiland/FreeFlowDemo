@@ -1,35 +1,56 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField]
-    float propultionForce;
+    [Header ("Visual Feedback")]
 
     [SerializeField]
     GameObject healthVisuContainer;
 
     [SerializeField]
-    GameObject[] lifeCount;
+    Image lifeBar;
 
     [SerializeField]
     GameObject visu;
 
+    [SerializeField]
+    ParticleSystem impactParticle;
+
+    [SerializeField]
+    Animator anim;
+
+    [Space (5)]
+    [Header ("Base Behavior")]
+
+    [SerializeField]
+    float propultionForce;
+
+    [SerializeField]
+    int maxLife;
+
+    [Space (5)]
+    [Header ("Movement")]
+
     public GameObject player;
+
+    [SerializeField]
+    float maxDistFromPlayer;
 
     NavMeshAgent nav;
     Rigidbody rb;
 
-    int intLifeCount;
+    int currentLife;
 
     private void Start()
     {
         nav = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
 
-        intLifeCount = lifeCount.Length - 1;
+        currentLife = maxLife;
     }
 
     void Update()
@@ -49,32 +70,20 @@ public class Enemy : MonoBehaviour
         healthVisuContainer.transform.LookAt(camPos);
     }
 
-    public void EnemyDamage(Vector3 direction, bool isStrong)
+    public void EnemyDamage()
     {
-        HealthVisu(isStrong);
+        lifeBar.fillAmount = currentLife / maxLife;
 
-        if (intLifeCount >= 0) return;
+        if (currentLife >= 0) return;
 
         nav.enabled = false;
         rb.isKinematic = false;
 
-        if (isStrong) rb.AddForce((direction + Vector3.up).normalized * propultionForce, ForceMode.Impulse);
-        else rb.AddForce((direction + Vector3.up).normalized * (propultionForce/3), ForceMode.Impulse);
+        Vector3 direction = player.transform.position + transform.position;
+
+        rb.AddForce((direction + Vector3.up).normalized * propultionForce, ForceMode.Impulse);
 
         Invoke("DestroyGameObject", 2);
-    }
-
-    void HealthVisu(bool isStrong)
-    {
-        lifeCount[intLifeCount].SetActive(false);
-        intLifeCount--;
-
-        if (isStrong)
-        {
-            intLifeCount = Mathf.Clamp(intLifeCount, 0, 100);
-            lifeCount[intLifeCount].SetActive(false);
-            intLifeCount--;
-        }
     }
 
     void DestroyGameObject()

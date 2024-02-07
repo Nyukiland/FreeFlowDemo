@@ -96,8 +96,7 @@ public class FightManager : MonoBehaviour
 
     float LerpPos;
     bool doLerp;
-    Vector3 startLerpPos, startLerpRot;
-    Vector3 endLerpPos, endLerpRot;
+    Vector3 startLerpPos, endLerpPos;
 
     #region InputSetUP
     private void Awake()
@@ -206,14 +205,9 @@ public class FightManager : MonoBehaviour
             //closeEnemy.GetComponent<Enemy>().IsCurrentFight(true);
 
             startLerpPos = transform.position;
-            startLerpRot = transform.eulerAngles;
-
-            endLerpPos = closeEnemy.transform.position + ((closeEnemy.transform.position - transform.position).normalized * 0.1f);
-            //endLerpRot = ;
+            endLerpPos = closeEnemy.transform.position + ((closeEnemy.transform.position - transform.position).normalized);
 
             playerMovement.enabled = false;
-
-            //Debug.Log("wtf");
         }
 
         transform.position = Vector3.Lerp(startLerpPos, endLerpPos, LerpPos);
@@ -231,15 +225,15 @@ public class FightManager : MonoBehaviour
             return;
         }
 
-        if(focusedEnemy != null) focusedEnemy.GetComponent<Enemy>().EnemyDamage(transform.position + closeEnemy.transform.position, false);
+        if(focusedEnemy != null) focusedEnemy.GetComponent<Enemy>().EnemyDamage();
     }
 
     void AttackDist()
     {
         if (!VerifyCanAct()) return;
 
-        if (farEnemy != null) farEnemy.GetComponent<Enemy>().EnemyDamage(transform.position + closeEnemy.transform.position, false);
-        else if (closeEnemy != null) closeEnemy.GetComponent<Enemy>().EnemyDamage(transform.position + closeEnemy.transform.position, false);
+        if (farEnemy != null) farEnemy.GetComponent<Enemy>().EnemyDamage();
+        else if (closeEnemy != null) closeEnemy.GetComponent<Enemy>().EnemyDamage();
     }
 
     void CounterStateControl()
