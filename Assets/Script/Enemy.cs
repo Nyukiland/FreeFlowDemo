@@ -55,12 +55,23 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        if (nav.enabled) nav.SetDestination(player.transform.position);
+        MovementControl();
 
         HealthLookAtCamera();
 
+        LifeControl();
+
         visu.transform.LookAt(player.transform.position);
         visu.transform.localEulerAngles = new(0, visu.transform.localEulerAngles.y, 0);
+    }
+
+    void MovementControl()
+    {
+        if (!nav.enabled) return;
+
+        Vector3 destinationToGo = player.transform.position;
+
+        nav.SetDestination(destinationToGo);
     }
 
     void HealthLookAtCamera()
@@ -70,25 +81,36 @@ public class Enemy : MonoBehaviour
         healthVisuContainer.transform.LookAt(camPos);
     }
 
-    public void EnemyDamage()
+    void LifeControl()
     {
         lifeBar.fillAmount = currentLife / maxLife;
 
-        if (currentLife >= 0) return;
+        if (currentLife <= 0)
+        {
+            nav.enabled = false;
+            rb.isKinematic = false;
 
-        nav.enabled = false;
-        rb.isKinematic = false;
-
-        Vector3 direction = player.transform.position + transform.position;
-
-        rb.AddForce((direction + Vector3.up).normalized * propultionForce, ForceMode.Impulse);
-
-        Invoke("DestroyGameObject", 2);
+            StartCoroutine(DeathEnnemi());
+        }
     }
 
-    void DestroyGameObject()
+    public void EnemyDamage()
     {
+        currentLife--;
+    }
+
+    IEnumerator DeathEnnemi()
+    {
+        Ragdollify();
+
+        yield return new WaitForSeconds(2);
+
         Destroy(this.gameObject);
+    }
+
+    void Ragdollify()
+    {
+
     }
 
     public void IsCurrentFight(bool isTheCurrentClose)

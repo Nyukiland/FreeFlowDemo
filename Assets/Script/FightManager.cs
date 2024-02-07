@@ -201,8 +201,10 @@ public class FightManager : MonoBehaviour
 
         if (LerpPos == 0)
         {
-            //focusedEnemy?.GetComponent<Enemy>().IsCurrentFight(false);
-            //closeEnemy.GetComponent<Enemy>().IsCurrentFight(true);
+            focusedEnemy?.GetComponent<Enemy>().IsCurrentFight(false);
+            focusedEnemy = null;
+
+            closeEnemy.GetComponent<Enemy>().IsCurrentFight(true);
 
             startLerpPos = transform.position;
             endLerpPos = closeEnemy.transform.position + ((closeEnemy.transform.position - transform.position).normalized);
