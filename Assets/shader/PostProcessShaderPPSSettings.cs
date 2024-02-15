@@ -9,8 +9,10 @@ using UnityEngine.Rendering.PostProcessing;
 [PostProcess( typeof( PostProcessShaderPPSRenderer ), PostProcessEvent.AfterStack, "PostProcessShader", true )]
 public sealed class PostProcessShaderPPSSettings : PostProcessEffectSettings
 {
-	[Tooltip( "Color 0" )]
-	public ColorParameter _Color0 = new ColorParameter { value = new Color(0.4245283f,0.4101104f,0.4101104f,0.454902f) };
+	[Tooltip( "OutlineSize" )]
+	public FloatParameter _OutlineSize = new FloatParameter { value = 1f };
+	[Tooltip( "waveControl" )]
+	public FloatParameter _waveControl = new FloatParameter { value = 0f };
 }
 
 public sealed class PostProcessShaderPPSRenderer : PostProcessEffectRenderer<PostProcessShaderPPSSettings>
@@ -18,7 +20,8 @@ public sealed class PostProcessShaderPPSRenderer : PostProcessEffectRenderer<Pos
 	public override void Render( PostProcessRenderContext context )
 	{
 		var sheet = context.propertySheets.Get( Shader.Find( "PostProcessShader" ) );
-		sheet.properties.SetColor( "_Color0", settings._Color0 );
+		sheet.properties.SetFloat( "_OutlineSize", settings._OutlineSize );
+		sheet.properties.SetFloat( "_waveControl", settings._waveControl );
 		context.command.BlitFullscreenTriangle( context.source, context.destination, sheet, 0 );
 	}
 }
