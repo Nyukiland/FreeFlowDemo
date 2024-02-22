@@ -201,7 +201,7 @@ public class FightManager : MonoBehaviour
 
         if (LerpPos == 0)
         {
-            focusedEnemy?.GetComponent<Enemy>().IsCurrentFight(false);
+            if (focusedEnemy != null) focusedEnemy.GetComponent<Enemy>().IsCurrentFight(false);
             focusedEnemy = null;
 
             closeEnemy.GetComponent<Enemy>().IsCurrentFight(true);

@@ -105,6 +105,8 @@ public class Enemy : MonoBehaviour
 
     void AnimImpact(int number)
     {
+        Debug.Log(number);
+
         anim.Play(ImpactAnimNames[number]);
     }
 

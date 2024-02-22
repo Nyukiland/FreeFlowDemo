@@ -2114,7 +2114,7 @@ MonoBehaviour:
   ImpactAnimNames:
   - Receive Uppercut To The Face
   - Body Block
-  - Big Kidney
+  - Big Kidney Hit
   - Reaction
   - Big Side Hit
   player: {fileID: 0}
