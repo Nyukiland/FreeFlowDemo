@@ -90,7 +90,7 @@ public class FightManager : MonoBehaviour
     float dashTimer =0;
     Vector2 dashDir;
 
-    float currentCombo;
+    int currentCombo;
 
     float fightMoveSpeed;
 
@@ -304,6 +304,11 @@ public class FightManager : MonoBehaviour
     {
         if (isDash || doLerp) return false;
         else return true;
+    }
+
+    public void EnemyDied()
+    {
+        focusedEnemy = null;
     }
 
     void OnDrawGizmosSelected()

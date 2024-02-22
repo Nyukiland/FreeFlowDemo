@@ -32,6 +32,9 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     int maxLife;
 
+    [SerializeField]
+    string[] ImpactAnimNames;
+
     [Space (5)]
     [Header ("Movement")]
 
@@ -97,10 +100,18 @@ public class Enemy : MonoBehaviour
     public void EnemyDamage()
     {
         currentLife--;
+        AnimImpact(Random.Range(0, ImpactAnimNames.Length - 1));
+    }
+
+    void AnimImpact(int number)
+    {
+        anim.Play(ImpactAnimNames[number]);
     }
 
     IEnumerator DeathEnnemi()
     {
+        gameObject.layer = 0;
+        player.GetComponent<FightManager>().EnemyDied();
         Ragdollify();
 
         yield return new WaitForSeconds(2);

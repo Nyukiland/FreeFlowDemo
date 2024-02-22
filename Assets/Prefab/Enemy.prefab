@@ -2111,6 +2111,12 @@ MonoBehaviour:
   anim: {fileID: 4968778715821826316}
   propultionForce: 20
   maxLife: 6
+  ImpactAnimNames:
+  - Receive Uppercut To The Face
+  - Body Block
+  - Big Kidney
+  - Reaction
+  - Big Side Hit
   player: {fileID: 0}
   maxDistFromPlayer: 2
 --- !u!1 &7576219238598996960
