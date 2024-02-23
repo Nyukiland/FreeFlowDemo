@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Toonification
+  m_Name: ToonificationEnemy
   m_Shader: {fileID: 4800000, guid: 6cff92d0491964146922e25ff6a97150, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -45,8 +45,8 @@ Material:
     - _etage: 8
     m_Colors:
     - _ASEOutlineColor: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0.2214756, g: 0.4568726, b: 0.745283, a: 0}
-    - _Color2: {r: 0.6509434, g: 0.32792807, b: 0.32792807, a: 0}
+    - _Color: {r: 0.3019608, g: 0.10196077, b: 0.12813838, a: 0}
+    - _Color2: {r: 0.1792453, g: 0, b: 0, a: 0}
     - _Scale_Offset: {r: 10, g: 0, b: 0, a: 0}
     - _outline: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

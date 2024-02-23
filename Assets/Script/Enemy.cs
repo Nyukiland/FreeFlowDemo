@@ -46,12 +46,18 @@ public class Enemy : MonoBehaviour
     NavMeshAgent nav;
     Rigidbody rb;
 
-    int currentLife;
+    float currentLife;
+
+    Rigidbody[] Ragdoll;
 
     private void Start()
     {
         nav = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
+
+        Ragdoll = visu.GetComponentsInChildren<Rigidbody>();
+
+        Ragdollify(false);
 
         currentLife = maxLife;
     }
@@ -105,8 +111,6 @@ public class Enemy : MonoBehaviour
 
     void AnimImpact(int number)
     {
-        Debug.Log(number);
-
         anim.Play(ImpactAnimNames[number]);
     }
 
@@ -114,16 +118,21 @@ public class Enemy : MonoBehaviour
     {
         gameObject.layer = 0;
         player.GetComponent<FightManager>().EnemyDied();
-        Ragdollify();
+        Ragdollify(true);
 
         yield return new WaitForSeconds(2);
 
         Destroy(this.gameObject);
     }
 
-    void Ragdollify()
+    void Ragdollify(bool isRagdoll)
     {
+        foreach(Rigidbody rb in Ragdoll)
+        {
+            rb.isKinematic = !isRagdoll;
+        }
 
+        anim.enabled = !isRagdoll;
     }
 
     public void IsCurrentFight(bool isTheCurrentClose)

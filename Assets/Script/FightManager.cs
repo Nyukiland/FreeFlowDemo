@@ -71,6 +71,10 @@ public class FightManager : MonoBehaviour
     [SerializeField]
     float maxTimeFight;
 
+    [Tooltip("Max time for the player to not be able to move")]
+    [SerializeField]
+    float maxTimeFightState = 0.5f;
+
     [Space(5)]
     [Header("Other")]
 
@@ -82,7 +86,8 @@ public class FightManager : MonoBehaviour
 
     PlayerMovement playerMovement;
 
-    GameObject focusedEnemy, closeEnemy, farEnemy;
+    [HideInInspector]
+    public GameObject focusedEnemy, closeEnemy, farEnemy;
 
     float timerC = 0;
 
@@ -97,6 +102,9 @@ public class FightManager : MonoBehaviour
     float LerpPos;
     bool doLerp;
     Vector3 startLerpPos, endLerpPos;
+
+    [HideInInspector]
+    public float timerFighting;
 
     #region InputSetUP
     private void Awake()
@@ -129,6 +137,8 @@ public class FightManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        TimerCanMove();
+
         EnemySelection();
 
         GoToEnemy();
@@ -137,6 +147,18 @@ public class FightManager : MonoBehaviour
 
         CounterStateControl();
         CounterAct();
+    }
+
+    void TimerCanMove()
+    {
+        if (timerFighting <= 0)
+        {
+            playerMovement.canMove = true;
+            return;
+        }
+
+        playerMovement.canMove = false;
+        timerFighting -= Time.deltaTime;
     }
 
     void EnemySelection()
@@ -207,7 +229,7 @@ public class FightManager : MonoBehaviour
             closeEnemy.GetComponent<Enemy>().IsCurrentFight(true);
 
             startLerpPos = transform.position;
-            endLerpPos = closeEnemy.transform.position + ((closeEnemy.transform.position - transform.position).normalized);
+            endLerpPos = closeEnemy.transform.position - ((closeEnemy.transform.position - transform.position).normalized * 1.1f);
 
             playerMovement.enabled = false;
         }
@@ -228,6 +250,8 @@ public class FightManager : MonoBehaviour
         }
 
         if(focusedEnemy != null) focusedEnemy.GetComponent<Enemy>().EnemyDamage();
+
+
     }
 
     void AttackDist()
