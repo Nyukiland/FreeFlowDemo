@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class FightManager : MonoBehaviour
 {
@@ -15,9 +16,8 @@ public class FightManager : MonoBehaviour
     [SerializeField]
     float farMax = 5;
 
-    [Tooltip("distance at which the close can no longer touch")]
-    [SerializeField]
-    float closeMax = 5;
+    [Tooltip("distance at which the close can no longer touch")] //public in order for ennemies to access it and position properly
+    public float closeMax = 5;
 
     [Tooltip("the layers that can be considered by the fight system")]
     [SerializeField]
@@ -65,21 +65,24 @@ public class FightManager : MonoBehaviour
 
     [Tooltip("Combo Text")]
     [SerializeField]
-    TextMeshProUGUI comboText;
+    int MaxCombo;
 
     [Tooltip("Max time whithout attacking before the combo is lost")]
     [SerializeField]
-    float maxTimeFight;
+    float maxTimeCombo;
 
     [Tooltip("Max time for the player to not be able to move")]
     [SerializeField]
     float maxTimeFightState = 0.5f;
 
     [Space(5)]
-    [Header("Other")]
+    [Header("UI")]
 
     [SerializeField]
-    GameObject pivotCam;
+    TextMeshProUGUI comboText;
+
+    [SerializeField]
+    Image comboBar;
 
     //private variable
     GameInputManager inputPlayer;
@@ -89,13 +92,13 @@ public class FightManager : MonoBehaviour
     [HideInInspector]
     public GameObject focusedEnemy, closeEnemy, farEnemy;
 
-    float timerC = 0;
+    float timerCounter = 0;
 
     bool isDash = false;
     float dashTimer =0;
     Vector2 dashDir;
 
-    int currentCombo;
+    float currentCombo;
 
     float fightMoveSpeed;
 
@@ -105,6 +108,8 @@ public class FightManager : MonoBehaviour
 
     [HideInInspector]
     public float timerFighting;
+
+    float timerCombo;
 
     #region InputSetUP
     private void Awake()
@@ -119,7 +124,7 @@ public class FightManager : MonoBehaviour
 
         inputPlayer.Fight.DistAttack.performed += ctx => AttackDist();
 
-        inputPlayer.Fight.Counter.performed += ctx => timerC = 0;
+        inputPlayer.Fight.Counter.performed += ctx => timerCounter = 0;
         inputPlayer.Fight.Dash.performed += ctx => CallOnDash();
     }
 
@@ -138,6 +143,8 @@ public class FightManager : MonoBehaviour
     void Update()
     {
         TimerCanMove();
+
+        ComboControl();
 
         EnemySelection();
 
@@ -161,6 +168,25 @@ public class FightManager : MonoBehaviour
         timerFighting -= Time.deltaTime;
     }
 
+    void ComboControl()
+    {
+        if (currentCombo == 0)
+        {
+            comboBar.gameObject.SetActive(false);
+            comboText.gameObject.SetActive(false);
+            return;
+        }
+
+        comboBar.gameObject.SetActive(true);
+        comboBar.fillAmount = currentCombo/MaxCombo;
+
+        comboText.gameObject.SetActive(true);
+        comboText.text = "X " + Mathf.Clamp(currentCombo, 0, 30);
+
+        timerCombo -= Time.deltaTime;
+        if (timerCombo <= 0) currentCombo = 0;
+    }
+
     void EnemySelection()
     {
         Vector3 direction = playerMovement.movementVector;
@@ -172,7 +198,7 @@ public class FightManager : MonoBehaviour
             {
                 if (hit.collider.gameObject != null)
                 {
-                    if (Vector3.Distance(hit.transform.position, transform.position) < closeMax)
+                    if (Vector3.Distance(hit.transform.position, transform.position) < farMax/2)
                     {
                         closeEnemy = hit.collider.gameObject;
                     }
@@ -186,7 +212,7 @@ public class FightManager : MonoBehaviour
         float closestEnemy = Mathf.Infinity;
         float enemy = Mathf.Infinity;
 
-        Collider[] enemyList = Physics.OverlapSphere(transform.position, closeMax/2, enemyLayer);
+        Collider[] enemyList = Physics.OverlapSphere(transform.position, closeMax, enemyLayer);
 
         for(int i = 0; i < enemyList.Length; i++)
         {
@@ -249,9 +275,12 @@ public class FightManager : MonoBehaviour
             return;
         }
 
-        if(focusedEnemy != null) focusedEnemy.GetComponent<Enemy>().EnemyDamage();
-
-
+        if (focusedEnemy != null)
+        {
+            currentCombo++;
+            timerCombo = maxTimeCombo;
+            focusedEnemy.GetComponent<Enemy>().EnemyDamage();
+        }
     }
 
     void AttackDist()
@@ -264,9 +293,9 @@ public class FightManager : MonoBehaviour
 
     void CounterStateControl()
     {
-        if (timerC < counterTime)
+        if (timerCounter < counterTime)
         {
-            timerC += Time.deltaTime;
+            timerCounter += Time.deltaTime;
         }
         else
         {
@@ -337,6 +366,13 @@ public class FightManager : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        Gizmos.DrawWireSphere(transform.position, closeMax/2);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, closeMax);
+
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(transform.position, farMax/2);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, farMax);
     }
 }

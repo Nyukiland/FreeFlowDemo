@@ -50,6 +50,8 @@ public class Enemy : MonoBehaviour
 
     Rigidbody[] Ragdoll;
 
+    float distanceFromPlayer;
+
     private void Start()
     {
         nav = GetComponent<NavMeshAgent>();
@@ -60,6 +62,8 @@ public class Enemy : MonoBehaviour
         Ragdollify(false);
 
         currentLife = maxLife;
+
+        distanceFromPlayer = Random.Range(0.75f, 1.25f);
     }
 
     void Update()
@@ -78,7 +82,7 @@ public class Enemy : MonoBehaviour
     {
         if (!nav.enabled) return;
 
-        Vector3 destinationToGo = player.transform.position;
+        Vector3 destinationToGo = player.transform.position - ((player.transform.position - transform.position).normalized * player.GetComponent<FightManager>().closeMax * distanceFromPlayer);
 
         nav.SetDestination(destinationToGo);
     }
@@ -137,7 +141,10 @@ public class Enemy : MonoBehaviour
 
     public void IsCurrentFight(bool isTheCurrentClose)
     {
-        if (isTheCurrentClose) nav.enabled = false;
-        else nav.enabled = true;
+        if (anim.enabled == false)
+        {
+            if (isTheCurrentClose) nav.enabled = false;
+            else nav.enabled = true;
+        }
     }
 }
